@@ -1,4 +1,4 @@
-# naming rule
+# 네이밍 룰
 
 import numpy as np
 import tensorflow as tf
