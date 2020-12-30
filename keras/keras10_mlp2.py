@@ -1,3 +1,5 @@
+# 다:1 MLP
+
 import numpy as np
 
 # 1. 데이터

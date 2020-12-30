@@ -1,5 +1,6 @@
 # 실습 : 코드를 완성할 것
 # mlp4 처럼 predict 값을 도출할 것
+# 1:다 mlp
 
 import numpy as np
 
