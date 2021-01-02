@@ -28,8 +28,11 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.2, random_s
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 model = Sequential()
-model.add(Dense(16, activation='relu', input_shape=(10,)))
-model.add(Dense(8, activation='relu'))
+model.add(Dense(120, activation='relu', input_shape=(10,)))
+model.add(Dense(80))
+model.add(Dense(60))
+model.add(Dense(60))
+model.add(Dense(60))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
