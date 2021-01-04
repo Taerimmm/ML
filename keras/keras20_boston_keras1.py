@@ -29,6 +29,8 @@ model.add(Dense(256))
 model.add(Dense(64))
 model.add(Dense(64))
 model.add(Dense(64))
+model.add(Dense(16))
+model.add(Dense(16))
 model.add(Dense(1))
 # model.summary()
 
@@ -51,8 +53,9 @@ print('R2 :', r2_score(y_test, y_predict))
 
 
 # 결과
-# loss : 10.722761154174805
-# MAE : 2.279066801071167 
-# RMSE : 3.27456299498727
-# MSE : 10.722762808139999
-# R2 : 0.8711885262538106
+
+# loss : 8.88598346710205
+# MAE : 1.997851014137268
+# RMSE : 2.9809367507717957
+# MSE : 8.885983912101912
+# R2 : 0.8932535668387758
