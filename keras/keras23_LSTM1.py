@@ -22,10 +22,14 @@ model.add(Dense(1))
 
 model.summary()
 '''
+참고 - 'davinci=ai.tistory.com/30#recentComments'
+
+
 LSTM은 4개의 gate(function)으로 구성 - sigmoid + sigmoid + Tanh + sigmoid
 param은 480으로 4 * (n + m + 1) * m 으로 계산
 n : size of input_dim
 m : size of output
+1 : bias
 gate가 4개이므로 gate의 수만큼 계산이 더 된다.
 forget gate, input gate, cell state, output gate
 

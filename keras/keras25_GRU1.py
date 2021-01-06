@@ -25,6 +25,10 @@ model.summary()
 GPU는 기존의 LSTM에서 cell state를 줄인 형태
 cell state의 역할을 다음 출력 h에서 역할을 함께 한다
 param은 390으로  3 * (n + m + 1 + 1) - sigmoid 2 + tanh 1
+n : size of input_dim
+m : size of output
+1 : bias
+1 : cell_state
 
 성능은 LSTM과 유사
 속도는 더 빠르다
