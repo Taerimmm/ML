@@ -55,27 +55,24 @@ model.add(Dense(10, activation='softmax'))
 model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
-# from tensorflow.keras.callbacks import EarlyStopping
-# early_stopping = EarlyStopping(monitor='loss', patience=10, mode='auto')
-# model.fit(x_train, y_train, epochs=4000, batch_size=32, validation_split=0.2, verbose=2, callbacks=[early_stopping])
-model.fit(x_train, y_train, epochs=2, batch_size=1, validation_split=0.2, verbose=2)
+from tensorflow.keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(monitor='loss', patience=10, mode='auto')
+model.fit(x_train, y_train, epochs=4000, batch_size=32, validation_split=0.2, verbose=2, callbacks=[early_stopping])
 
 loss, acc = model.evaluate(x_test, y_test)
 print('loss :', loss)
 print('acc :', acc)
 
-# loss : 0.054836805909872055
-# acc : 0.9912999868392944
-
-
+# loss : 0.052828989923000336
+# acc : 0.9911999702453613
 
 # 응용
 # y_test 10개와 10개를 출력하시오
 
-'''
 y_pred = model.predict(x_test)
+
+print(y_pred)
 print('==========================')
 print('   예상 ' ,'|','   예측  ')
 for i in range(10):
-    print('  ', np.argmax(y_test[i+40], axis=1), '  |', np.argmax(y_pred[i+40], axis=1))
-'''
+    print('  ', np.argmax(y_test[i+40]), '  |', np.argmax(y_pred[i+40]))
