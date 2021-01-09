@@ -18,10 +18,10 @@ print(y_train[0])
 
 print(x_train[0].shape)         # (28, 28)
 
-x_train = x_train.reshape(60000, 28 * 7, 4).astype('float32')/255.
-x_test = x_test.reshape(10000, 28 * 7, 4)/255. 
+x_train = x_train.reshape(60000, 28 * 4, 7).astype('float32')/255.
+x_test = x_test.reshape(10000, 28 * 4, 7)/255. 
 
-print(x_train.shape, x_test.shape)     # (60000, 196, 4) (10000, 196, 4)
+print(x_train.shape, x_test.shape)     # (60000, 112, 7) (10000, 112, 7)
 
 # OneHotEncoding
 # 여러분이 하시오!!!
@@ -38,28 +38,32 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 
 model = Sequential()
-model.add(LSTM(64, activation='relu', input_shape=(196,4)))
+model.add(LSTM(128, activation='relu', input_shape=(112,7)))
 model.add(Dropout(0.2))
-model.add(Dense(32, activation='relu'))
+model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.2))
+model.add(Dense(512, activation='relu'))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(128, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 from tensorflow.keras.callbacks import EarlyStopping
-early_stopping = EarlyStopping(monitor='loss', patience=10, mode='auto')
-model.fit(x_train, y_train, epochs=4000, batch_size=32, validation_split=0.2, verbose=2, callbacks=[early_stopping])
+early_stopping = EarlyStopping(monitor='loss', patience=5, mode='auto')
+model.fit(x_train, y_train, epochs=4000, batch_size=16, validation_split=0.2, verbose=2, callbacks=[early_stopping])
 
 loss, acc = model.evaluate(x_test, y_test)
 print('loss :', loss)
 print('acc :', acc)
 
-# loss : 1.6317001581192017
-# acc : 0.3853999972343445
+# loss : 0.09020749479532242
+# acc : 0.9750999808311462
 
 # 응용
 # y_test 10개와 10개를 출력하시오
+
 
 y_pred = model.predict(x_test)
 
