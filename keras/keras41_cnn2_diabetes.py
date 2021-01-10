@@ -30,7 +30,7 @@ from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropou
 model = Sequential()
 model.add(Conv2D(filters=16, kernel_size=(2,2), padding='same', strides=1, input_shape=(10,1,1)))
 model.add(Dropout(0.2))
-model.add(Conv2D(32, (2,2), padding='same', strides=1))
+model.add(Conv2D(64, (2,2), padding='same', strides=1))
 model.add(Dropout(0.2))
 model.add(Flatten())
 model.add(Dense(16, activation='relu'))
@@ -52,10 +52,10 @@ print('MSE :', mean_squared_error(y_test, y_pred))
 print('R2 :', r2_score(y_test, y_pred))
 
 # CNN
-# loss : 2514.091552734375
-# RMSE : 50.14071907425272
-# MSE : 2514.091709283131
-# R2 : 0.49048763959677477
+# loss : 2353.211669921875
+# RMSE : 48.5099141168283
+# MSE : 2353.2117676220573
+# R2 : 0.5230919867312076
 
 # LSTM
 # loss : 3504.971923828125
