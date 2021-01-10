@@ -28,13 +28,12 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], 1, 1)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 model = Sequential()
-model.add(Conv2D(filters=256, kernel_size=(2,2), padding='same', strides=1, input_shape=(10,1,1)))
+model.add(Conv2D(filters=16, kernel_size=(2,2), padding='same', strides=1, input_shape=(10,1,1)))
 model.add(Dropout(0.2))
-model.add(Conv2D(64, (2,2), padding='same', strides=1))
+model.add(Conv2D(32, (2,2), padding='same', strides=1))
 model.add(Dropout(0.2))
 model.add(Flatten())
-model.add(Dense(64, activation='relu'))
-model.add(Dense(64, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
@@ -53,10 +52,10 @@ print('MSE :', mean_squared_error(y_test, y_pred))
 print('R2 :', r2_score(y_test, y_pred))
 
 # CNN
-# loss : 2938.334716796875
-# RMSE : 54.20640907280818
-# MSE : 2938.3347845686208
-# R2 : 0.4045094352714169
+# loss : 2514.091552734375
+# RMSE : 50.14071907425272
+# MSE : 2514.091709283131
+# R2 : 0.49048763959677477
 
 # LSTM
 # loss : 3504.971923828125
