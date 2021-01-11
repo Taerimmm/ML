@@ -9,17 +9,17 @@ print(y_train.shape, y_test.shape)      # (50000, 1) (10000, 1)
 
 print(np.max(x_train), np.min(x_train))
 
-x_train = x_train.reshape(50000,32*32*3)/255.
-x_test = x_test.reshape(10000,32*32*3)/255.
+x_train = x_train.reshape(50000,32*3,32)/255.
+x_test = x_test.reshape(10000,32*3,32)/255.
 
 from tensorflow.keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Dense, LSTM, Dropout
 model = Sequential()
-model.add(Dense(1024, activation='relu', input_shape=(32*32*3,)))
+model.add(LSTM(1024, activation='relu', input_shape=(32*3,32)))
 model.add(Dropout(0.2))
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.2))
@@ -39,8 +39,8 @@ print('loss :', loss)
 print('ACC :', acc)
 
 # Result
-# loss : 1.534844160079956
-# ACC : 0.47429999709129333
+# loss : 2.3026647567749023
+# ACC : 0.10000000149011612
 
 y_pred = model.predict(x_test)
 print('==========================')

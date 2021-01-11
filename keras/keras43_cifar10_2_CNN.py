@@ -19,14 +19,16 @@ y_test = to_categorical(y_test)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 model = Sequential()
-model.add(Conv2D(filters=512, kernel_size=(2,2), padding='same', strides=1, input_shape=(32,32,3)))
+model.add(Conv2D(filters=32, kernel_size=(3,3), activation='relu', padding='same', strides=1, input_shape=(32,32,3)))
+model.add(Conv2D(32, (3,3), activation='relu', padding='same', strides=1))
 model.add(MaxPooling2D(pool_size=2))
 model.add(Dropout(0.2))
-model.add(Conv2D(256, (2,2), padding='same', strides=1))
+model.add(Conv2D(128, (3,3), activation='relu', padding='same', strides=1))
+model.add(Conv2D(128, (3,3), activation='relu', padding='same', strides=1))
+model.add(MaxPooling2D(pool_size=2))
 model.add(Dropout(0.2))
 model.add(Flatten())
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
 model.add(Dense(128, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
@@ -35,15 +37,15 @@ model.summary()
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 from tensorflow.keras.callbacks import EarlyStopping
 es = EarlyStopping(monitor='loss', patience=20, mode='auto')
-model.fit(x_train, y_train, epochs=1000, batch_size=16, validation_split=0.2, verbose=2, callbacks=[es])
+model.fit(x_train, y_train, epochs=1000, batch_size=32, validation_split=0.2, verbose=2, callbacks=[es])
 
 loss, acc = model.evaluate(x_test, y_test)
 print('loss :', loss)
 print('ACC :', acc)
 
 # Result
-# loss : 2.4829750061035156
-# ACC : 0.5597000122070312
+# loss : 1.6115065813064575
+# ACC : 0.7753000259399414
 
 
 y_pred = model.predict(x_test)

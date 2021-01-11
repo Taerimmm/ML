@@ -19,18 +19,18 @@ x_test = x_test/255.
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 model = Sequential()
-model.add(Conv2D(64, (2,2), padding='same', strides=1, input_shape=(32,32,3)))
+model.add(Conv2D(filters=32, kernel_size=(3,3), activation='relu', padding='same', strides=1, input_shape=(32,32,3)))
+model.add(Conv2D(32, (3,3), activation='relu', padding='same', strides=1))
 model.add(MaxPooling2D(pool_size=2))
 model.add(Dropout(0.2))
-model.add(Conv2D(128, (2,2), padding='same', strides=1))
+model.add(Conv2D(128, (3,3), activation='relu', padding='same', strides=1))
+model.add(Conv2D(128, (3,3), activation='relu', padding='same', strides=1))
 model.add(MaxPooling2D(pool_size=2))
 model.add(Dropout(0.2))
 model.add(Flatten())
-model.add(Dense(256, activation='relu'))
 model.add(Dense(128, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(100, activation='softmax'))
 
 model.summary()
 
@@ -44,7 +44,8 @@ print('loss :', loss)
 print('ACC :', acc)
 
 # Result
-
+# loss : 9.50490665435791
+# ACC : 0.27149999141693115
 
 y_pred = model.predict(x_test)
 print('==========================')

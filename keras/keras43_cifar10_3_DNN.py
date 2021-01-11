@@ -19,12 +19,13 @@ y_test = to_categorical(y_test)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 model = Sequential()
-model.add(Dense(1024, activation='relu', input_shape=(32*32*3,)))
+model.add(Dense(32, activation='relu', input_shape=(32*32*3,)))
+model.add(Dense(32, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(256, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 model.summary()
