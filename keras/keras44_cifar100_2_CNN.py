@@ -44,8 +44,8 @@ print('loss :', loss)
 print('ACC :', acc)
 
 # Result
-# loss : 9.50490665435791
-# ACC : 0.27149999141693115
+# loss : 6.500985145568848
+# ACC : 0.3555000126361847
 
 y_pred = model.predict(x_test)
 print('==========================')

@@ -17,12 +17,16 @@ x_train = x_train.reshape(50000, 32, 32*3)/255.
 x_test = x_test.reshape(10000, 32, 32*3)/255.
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Dense, LSTM, Dropout
 
 model = Sequential()
-model.add(Dense(512, activation='relu', input_shape=(32,32*3)))
-model.add(Dense(256, activation='relu'))
+model.add(LSTM(256, activation='relu', input_shape=(32,32*3)))
 model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(32, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(100, activation='softmax'))
 
 model.summary()
@@ -37,8 +41,8 @@ print('loss :', loss)
 print('ACC :', acc)
 
 # Result
-# loss : 8.284381866455078
-# ACC : 0.17080000042915344
+# loss : 4.605501651763916
+# ACC : 0.009999999776482582
 
 y_pred = model.predict(x_test)
 print('==========================')
