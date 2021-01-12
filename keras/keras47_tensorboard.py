@@ -43,10 +43,10 @@ model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-modelpath = './modelCheckpoint/k45_mnist_{epoch:02d}-{val_loss:.4f}.hdf5'
+modelpath = '../data/modelcheckpoint/k45_mnist_{epoch:02d}-{val_loss:.4f}.hdf5'
 es = EarlyStopping(monitor='val_loss', patience=5)
 cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-tb = TensorBoard(log_dir='graph', histogram_freq=0, write_images=True, write_graph=True)
+tb = TensorBoard(log_dir='../data/graph', histogram_freq=0, write_images=True, write_graph=True)
 hist = model.fit(x_train, y_train, epochs=30, batch_size=32, validation_split=0.2, verbose=2, callbacks=[es,cp,tb])
 
 result = model.evaluate(x_test, y_test)
