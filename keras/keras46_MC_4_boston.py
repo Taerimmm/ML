@@ -33,7 +33,7 @@ model = Model(inputs=input1, outputs=output1)
 
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-modelpath = './modelCheckpoint/k46_boston_{epoch:02d}-{val_loss:.4f}.hdf5'
+modelpath = '../data/modelcheckpoint/k46_boston_{epoch:02d}-{val_loss:.4f}.hdf5'
 cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
 es = EarlyStopping(monitor='val_loss', patience=20, mode='auto')
 model.fit(x_train, y_train, epochs=4000, batch_size=8, validation_data=(x_val, y_val), verbose=2, callbacks=[es,cp])
