@@ -26,7 +26,7 @@ plt.show()
 x_data = stock.drop(['종가'], axis=1)
 y_data = stock['종가']
 
-x_data = x_data.loc[:,['등락률', '거래량', '금액(백만)', '개인', '기관', '외인(수량)']]
+x_data = x_data.iloc[:,[0,1,2,4,5]]
 
 print(x_data.shape)         # (662, 6)
 print(y_data.shape)         # (662,)
@@ -64,18 +64,26 @@ x_data = x_data_mm.reshape(x_data.shape[0],x_data.shape[1],x_data.shape[2])
 x_train = x_train.reshape(x_train.shape[0], x_data.shape[1], x_data.shape[2])
 x_test = x_test.reshape(x_test.shape[0], x_data.shape[1], x_data.shape[2])
 
+np.save('../data/npy/stock_x_data.npy', arr=x_data)
+np.save('../data/npy/stock_x_train.npy', arr=x_train)
+np.save('../data/npy/stock_x_test.npy', arr=x_test)
+np.save('../data/npy/stock_y_train.npy', arr=y_train)
+np.save('../data/npy/stock_y_test.npy', arr=y_test)
+
 # 모델
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 
 # print(type(x_train.shape[1]))
 model = Sequential()
-model.add(LSTM(1024, activation='relu', input_shape=(x_train.shape[1],x_train.shape[2])))
+model.add(LSTM(256, activation='relu', input_shape=(x_train.shape[1],x_train.shape[2])))
+model.add(Dropout(0.2))
+model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
 model.add(Dense(1))
 
 model.summary()
@@ -104,9 +112,16 @@ print('MSE :', mean_squared_error(y_test, y_pred))
 print('R2 :', r2_score(y_test, y_pred))
 print('\n', '===========================================','\n')
 
+# Result
+# loss: 33503260.0000
+# RMSE : 5788.2
+# MSE : 33503264.0
+# R2 : 0.5757151482925984
+
 # 2021-01-13 예측
 last = x_data[-1].reshape(1,x_train.shape[1],x_train.shape[2])
 a = model.predict(last)
 print('\'2021-01-03\'의 종가는', a, '로 예측 됩니다.')
 
-# loss : 60508188.0
+# 예측값
+# 88053.53
