@@ -137,11 +137,12 @@ model.summary()
 
 # 훈련
 model.compile(loss='mse', optimizer='adam')
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 modelpath = './samsung/etc/19day_model_checkpoint.hdf5'
 es = EarlyStopping(monitor='val_loss', patience=200, mode='auto')
 cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-model.fit([x1_train,x2_train], y_train, epochs=10000, batch_size=4, validation_data=([x1_val,x2_val], y_val), verbose=2, callbacks=[es,cp])
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, factor=0.5, verbose=1)
+model.fit([x1_train,x2_train], y_train, epochs=10000, batch_size=4, validation_data=([x1_val,x2_val], y_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
 model.save('./samsung/etc/19day_stock_model.h5')
 
