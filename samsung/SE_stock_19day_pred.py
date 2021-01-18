@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 
 # X, Y 나누기
-x1_data = pd.DataFrame(np.load('./samsung/etc/19day_data_1.npy'))
-x2_data = pd.DataFrame(np.load('./samsung/etc/19day_data_2.npy'))
+x1_data = pd.DataFrame(np.load('./samsung/etc/19day_x1_data.npy'))
+x2_data = pd.DataFrame(np.load('./samsung/etc/19day_x2_data.npy'))
 y_data = x1_data.iloc[:,0]
 
 x1_data = x1_data[-1085:]
