@@ -27,30 +27,10 @@ for i in range(81):
         submission.iloc[96*i:96*(i+1), j] = np.array([x for x in (y_pred_1*y_pred_2).reshape(96)])
         # submission.iloc[96*i:96*(i+1), j] = np.array([x if x > 1 else 0 for x in (y_pred_1*y_pred_2).reshape(96)])
 
-
 print(submission)
 print(submission.shape)
 
 submission.to_csv('./dacon/data/sample_submission_new.csv')
-
-'''
-# 원본
-quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-for i in range(81):
-    # a = []
-    data = pd.read_csv("./dacon/data/test/{}.csv".format(i), header=0).set_index(['Day','Hour','Minute'])
-    for j, k in enumerate(quantiles):
-        a = []
-        a.append(np.array(data))
-        x_test = np.array(a)
-        y_pred = model.predict(x_test)
-        submission.iloc[96*i:96*(i+1), j] = np.array(y_pred)
-
-print(submission)
-print(submission.shape)
-
-submission.to_csv('./dacon/data/sample_submission_new.csv')
-'''
 
 '''
 # 분포 확인

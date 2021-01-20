@@ -76,24 +76,3 @@ model.fit(x_train, y_train, epochs=1000, batch_size=256, validation_split=0.2, v
 
 loss = model.evaluate(x_test, y_test, batch_size=256)
 print('loss :', loss)
-
-'''
-from tensorflow.keras.models import load_model
-model = load_model('./dacon/data/sunlight_model_binary.hdf5')
-
-submission = pd.DataFrame(np.zeros((7776,9)))
-quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-for i in range(81):
-    # a = []
-    data = pd.read_csv("./dacon/data/test/{}.csv".format(i), header=0).set_index(['Day','Hour','Minute'])
-    for j, k in enumerate(quantiles):
-        a = []
-        a.append(np.array(data.iloc[:,-1:]))
-        x_test = np.array(a)
-        y_pred = model.predict(x_test)
-        # print(y_pred)
-        submission.iloc[96*i:96*(i+1), j] = np.array(y_pred)
-
-
-submission.to_csv('./dacon/data/sample_submission_binary.csv')
-'''
