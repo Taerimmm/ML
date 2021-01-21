@@ -4,9 +4,21 @@ import pandas as pd
 # 데이터
 data = pd.read_csv('./dacon/data/train/train.csv', header=0)
 
-data.set_index(['Day','Hour','Minute'], inplace=True)
-print(data.shape)
-print(data.head())
+target = data.iloc[:,-1]
+
+def add_features(data):
+    data['cos'] = np.cos(np.pi/2 - np.abs(data['Hour']%12 - 6)/6*np.pi/2)
+    data.insert(3, 'GHI', data['DNI']*data['cos']+data['DHI'])
+    data.drop(['cos'], axis=1, inplace=True)
+    return data
+
+data = add_features(data).iloc[:,3:]
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+data = pd.DataFrame(scaler.fit_transform(data))
+
+data['target'] = target
 
 def split_x(data, x_row, x_col, y_row, y_col):
     a, b =[], []
@@ -26,7 +38,7 @@ def split_x(data, x_row, x_col, y_row, y_col):
 
     return  a, b
 
-x_row, x_col = 2*24*7, 6
+x_row, x_col = 2*24*7, 7
 y_row, y_col = 2*24*2, 1
 (x_data, y_data) = split_x(data, x_row, x_col, y_row, y_col)
 
@@ -69,7 +81,7 @@ for i, j in enumerate(quantiles):
     modelpath = "./dacon/data/sunlight_model_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
-    model.fit(x_train, y_train, epochs=1000, batch_size=8, validation_split=0.2, verbose=2, callbacks=[es,cp,reduce_lr])
+    model.fit(x_train, y_train, epochs=1000, batch_size=64, validation_split=0.2, verbose=2, callbacks=[es,cp,reduce_lr])
 
 loss = model.evaluate(x_test, y_test, batch_size=256)
 print('loss :', loss)

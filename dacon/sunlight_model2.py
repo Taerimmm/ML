@@ -4,12 +4,8 @@ import pandas as pd
 # 데이터
 data = pd.read_csv('./dacon/data/train/train.csv', header=0)
 
-data.set_index(['Day','Hour','Minute'], inplace=True)
-print(data.shape)
-print(data.head())
-
 a = []
-for i in range(len(data)):
+for i in range(data.shape[0]):
     target = data.iloc[i,-1]
     if target > 0.0:
         a.append(1)
