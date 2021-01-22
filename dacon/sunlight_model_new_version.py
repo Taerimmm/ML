@@ -41,7 +41,7 @@ test_data = pd.concat(test_data)
 print(test_data.iloc[:48])
 print(test_data.shape)      # (3888, 8)
 
-x_data = train_data.iloc[:,:-2]
+x_data = train_data.iloc[:,1:-2]
 y1_data = train_data.iloc[:,-2:-1]
 y2_data = train_data.iloc[:,-1:]
 
@@ -50,7 +50,10 @@ scaler = StandardScaler()
 scaler.fit(x_data)
 x_data = scaler.transform(x_data)
 
-test_data = scaler.transform(test_data)
+test_data = scaler.transform(test_data.iloc[:,1:])
+
+print(x_data.shape)
+print(test_data.shape)
 
 def split_x(data, size):
     a = []
@@ -58,9 +61,14 @@ def split_x(data, size):
         a.append(np.array(data.iloc[i:(i+size),:]))
     return np.array(a)
 
-x_data = split_x(pd.DataFrame(x_data), 24)
-y1_data = split_x(y1_data, 24)
-y2_data = split_x(y2_data, 24)
+x_data = split_x(pd.DataFrame(x_data), 48)
+y1_data = split_x(y1_data, 48)
+y2_data = split_x(y2_data, 48)
+
+x_data = x_data.reshape(x_data.shape[0],x_data.shape[1],1,x_data.shape[2])
+y1_data = y1_data.reshape(y1_data.shape[0],y1_data.shape[1],1)
+y2_data = y2_data.reshape(y2_data.shape[0],y2_data.shape[1],1)
+test_data = test_data.reshape(81,48,1,7)
 
 print(x_data.shape)
 print(y1_data.shape)
@@ -68,25 +76,27 @@ print(y2_data.shape)
 print(test_data.shape)
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y1_train, y1_test, y2_train, y2_test = train_test_split(x_data, y1_data, y2_data, test_size=0.2)
+x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x_data, y1_data, y2_data, test_size=0.2)
+print(x_train.shape)
+print(x_val.shape)
 
 # 모델링 
 from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.layers import Dense, Conv1D, MaxPooling1D, Flatten, Dropout, Reshape, Input, Concatenate
+from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten, Dropout, Reshape, Input, Concatenate
 
-input1 = Input(shape=(x_data.shape[1],x_data.shape[2]))
-layer1 = Conv1D(32,3,activation='relu',padding='same',strides=1)(input1)
-layer1 = Conv1D(32,3,activation='relu',padding='same',strides=1)(layer1)
-layer1 = MaxPooling1D(pool_size=2)(layer1)
+input1 = Input(shape=(x_data.shape[1],x_data.shape[2],x_data.shape[3]))
+layer1 = Conv2D(36,2,activation='relu',padding='same',strides=1)(input1)
+layer1 = Conv2D(36,2,activation='relu',padding='same',strides=1)(layer1)
 layer1 = Dropout(0.2)(layer1)
-layer1 = Conv1D(32,3,activation='relu',padding='same',strides=1)(input1)
-layer1 = Conv1D(32,3,activation='relu',padding='same',strides=1)(layer1)
-layer1 = MaxPooling1D(pool_size=2)(layer1)
+layer1 = Conv2D(64,2,activation='relu',padding='same',strides=1)(layer1)
+layer1 = Conv2D(64,2,activation='relu',padding='same',strides=1)(layer1)
 layer1 = Dropout(0.2)(layer1)
 layer1 = Flatten()(layer1)
+layer1 = Dense(256, activation='relu')(layer1)
+layer1 = Dense(128, activation='relu')(layer1)
 layer1 = Dense(64, activation='relu')(layer1)
-layer1 = Dense(64, activation='relu')(layer1)
-output1 = Dense(24)(layer1)
+layer1 = Dense(48, activation='relu')(layer1)
+output1 = Reshape([48,1])(layer1)
 
 model = Model(inputs=input1,outputs=output1)
 
@@ -102,28 +112,28 @@ for i, j in enumerate(quantiles):
     print('Quantile-{} fitting Start'.format(j))
     model.compile(loss=lambda y,pred : quantile_loss(j, y, pred), optimizer='adam')
     from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-    es = EarlyStopping(monitor='val_loss', patience=50, mode='auto')
+    es = EarlyStopping(monitor='val_loss', patience=10, mode='auto')
     modelpath = "./dacon/data/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
-    model.fit(x_train, y1_train, epochs=1000, batch_size=64, validation_split=0.2, verbose=2, callbacks=[es,cp,reduce_lr])
+    model.fit(x_train, y1_train, epochs=100, batch_size=64, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
-    y1_pred = model.predict(np.array(test_data).reshape(162, 24, 8))
-    submission.iloc[:3888,i] = np.array([x if x > 0 else 0 for x in y1_pred.reshape(3888)])
+    y1_pred = model.predict(test_data)
+    submission.iloc[:3888,i] = np.array([np.round(x,2) if x > 0 else 0 for x in y1_pred.reshape(3888)])
 
 for i, j in enumerate(quantiles):
     a = []
     print('Quantile-{} fitting Start'.format(j))
     model.compile(loss=lambda y,pred : quantile_loss(j, y, pred), optimizer='adam')
     from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-    es = EarlyStopping(monitor='val_loss', patience=50, mode='auto')
+    es = EarlyStopping(monitor='val_loss', patience=10, mode='auto')
     modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
-    model.fit(x_train, y2_train, epochs=1000, batch_size=64, validation_split=0.2, verbose=2, callbacks=[es,cp,reduce_lr])
+    model.fit(x_train, y2_train, epochs=100, batch_size=64, validation_data=(x_val, y2_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
-    y2_pred = model.predict(np.array(test_data).reshape(162, 24, 8))
-    submission.iloc[3888:,i] = np.array([x if x > 0 else 0 for x in y2_pred.reshape(3888)])
+    y2_pred = model.predict(test_data)
+    submission.iloc[3888:,i] = np.array([np.round(x,2) if x > 0 else 0 for x in y2_pred.reshape(3888)])
 
 print(submission)
 print(submission.shape)
