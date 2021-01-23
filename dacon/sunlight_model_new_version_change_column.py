@@ -31,16 +31,6 @@ train_data = preprocess_data(add_features(train_data))
 print(train_data.iloc[:48])
 print(train_data.shape)     # (52464, 10)
 
-test_data = []
-for i in range(81):
-    temp = pd.read_csv("./dacon/data/test/{}.csv".format(i), header=0)
-    temp = preprocess_data(add_features(temp), is_train=False)
-    test_data.append(temp)
-test_data = pd.concat(test_data)
-
-print(test_data.iloc[:48])
-print(test_data.shape)      # (3888, 8)
-
 x_data = train_data.iloc[:,[1,2,3,4,6,7]]
 y1_data = train_data.iloc[:,-2:-1]
 y2_data = train_data.iloc[:,-1:]
@@ -49,6 +39,13 @@ from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 scaler.fit(x_data)
 x_data = scaler.transform(x_data)
+
+test_data = []
+for i in range(81):
+    temp = pd.read_csv("./dacon/data/test/{}.csv".format(i), header=0)
+    temp = preprocess_data(add_features(temp), is_train=False)
+    test_data.append(temp)
+test_data = pd.concat(test_data)
 
 test_data = scaler.transform(test_data.iloc[:,[1,2,3,4,6,7]])
 
@@ -65,18 +62,22 @@ x_data = split_x(pd.DataFrame(x_data), 48)
 y1_data = split_x(y1_data, 48)
 y2_data = split_x(y2_data, 48)
 
-x_data = x_data.reshape(x_data.shape[0],x_data.shape[1],1,x_data.shape[2])
-y1_data = y1_data.reshape(y1_data.shape[0],y1_data.shape[1],1)
-y2_data = y2_data.reshape(y2_data.shape[0],y2_data.shape[1],1)
-test_data = test_data.reshape(81,48,1,6)
-
 print(x_data.shape)
 print(y1_data.shape)
 print(y2_data.shape)
+
+# x_data = x_data.reshape(x_data.shape[0],x_data.shape[1],1,x_data.shape[2])
+# y1_data = y1_data.reshape(y1_data.shape[0],y1_data.shape[1],1)
+# y2_data = y2_data.reshape(y2_data.shape[0],y2_data.shape[1],1)
+test_data = test_data.reshape(int(test_data.shape[0]/x_data.shape[1]),x_data.shape[1],x_data.shape[2])
+
+# print(x_data.shape)
+# print(y1_data.shape)
+# print(y2_data.shape)
 print(test_data.shape)
 
 from sklearn.model_selection import train_test_split
-x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x_data, y1_data, y2_data, test_size=0.2)
+x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x_data, y1_data, y2_data, test_size=0.3)
 print(x_train.shape)
 print(x_val.shape)
 
@@ -84,36 +85,31 @@ print(x_val.shape)
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten, Dropout, Reshape, Input, Concatenate
 
-input1 = Input(shape=(x_data.shape[1],x_data.shape[2],x_data.shape[3]))
-layer1 = Conv2D(36,2,activation='swish',padding='same',strides=1)(input1)   # swish
-layer1 = Conv2D(36,2,activation='swish',padding='same',strides=1)(layer1)
-layer1 = Conv2D(64,2,activation='swish',padding='same',strides=1)(layer1)
-layer1 = Conv2D(64,2,activation='swish',padding='same',strides=1)(layer1)
-layer1 = Flatten()(layer1)
-layer1 = Dense(96, activation='swish')(layer1)
-layer1 = Dense(96, activation='swish')(layer1)
-layer1 = Dense(64, activation='swish')(layer1)
-layer1 = Dense(48, activation='swish')(layer1)
-output1 = Reshape([48,1])(layer1)
+input1 = Input(shape=(x_data.shape[1],x_data.shape[2]))
+layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
+layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
+layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
+layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(layer1)
+output1 = Conv1D(1,2,activation='relu',padding='same',strides=1)(layer1)
 
 model = Model(inputs=input1,outputs=output1)
 
 model.summary()
 
 from tensorflow.keras.backend import mean, maximum
-def quantile_loss(q, y, pred):
-    err = (y-pred)
+def quantile_loss(q, y_true, y_pred):
+    err = (y_true - y_pred)
     return mean(maximum(q*err, (q-1)*err), axis=-1)
 
 quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 for i, j in enumerate(quantiles):
     print('Quantile-{} fitting Start'.format(j))
-    model.compile(loss=lambda y,pred : quantile_loss(j,y,pred), optimizer='adam', metrics=[lambda y,pred : quantile_loss(j,y,pred)])
+    model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
     from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-    es = EarlyStopping(monitor='val_loss', patience=20, mode='auto')
+    es = EarlyStopping(monitor='val_loss', patience=30, mode='auto')
     modelpath = "./dacon/data/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, factor=0.25, verbose=1)
     model.fit(x_train, y1_train, epochs=10000, batch_size=64, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
     y1_pred = model.predict(test_data)
@@ -122,12 +118,12 @@ for i, j in enumerate(quantiles):
 for i, j in enumerate(quantiles):
     a = []
     print('Quantile-{} fitting Start'.format(j))
-    model.compile(loss=lambda y,pred : quantile_loss(j,y,pred), optimizer='adam', metrics=[lambda y,pred : quantile_loss(j,y,pred)])
+    model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
     from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-    es = EarlyStopping(monitor='val_loss', patience=20, mode='auto')
+    es = EarlyStopping(monitor='val_loss', patience=30, mode='auto')
     modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, factor=0.25, verbose=1)
     model.fit(x_train, y2_train, epochs=10000, batch_size=64, validation_data=(x_val, y2_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
     y2_pred = model.predict(test_data)
