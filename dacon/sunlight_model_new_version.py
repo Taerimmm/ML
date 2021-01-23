@@ -85,17 +85,15 @@ from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten, Dropout, Reshape, Input, Concatenate
 
 input1 = Input(shape=(x_data.shape[1],x_data.shape[2],x_data.shape[3]))
-layer1 = Conv2D(48,2,activation='relu',padding='same',strides=1)(input1)
-layer1 = Conv2D(48,2,activation='relu',padding='same',strides=1)(layer1)
-layer1 = Dropout(0.2)(layer1)
-layer1 = Conv2D(96,2,activation='relu',padding='same',strides=1)(layer1)
-layer1 = Conv2D(96,2,activation='relu',padding='same',strides=1)(layer1)
-layer1 = Dropout(0.2)(layer1)
+layer1 = Conv2D(63,2,activation='swish',padding='same',strides=1)(input1)
+layer1 = Conv2D(63,2,activation='swish',padding='same',strides=1)(layer1)
+layer1 = Conv2D(126,2,activation='swish',padding='same',strides=1)(layer1)
+layer1 = Conv2D(126,2,activation='swish',padding='same',strides=1)(layer1)
 layer1 = Flatten()(layer1)
-layer1 = Dense(96, activation='relu')(layer1)
-layer1 = Dense(96, activation='relu')(layer1)
-layer1 = Dense(48, activation='relu')(layer1)
-layer1 = Dense(48, activation='relu')(layer1)
+layer1 = Dense(96, activation='swish')(layer1)
+layer1 = Dense(96, activation='swish')(layer1)
+layer1 = Dense(48, activation='swish')(layer1)
+layer1 = Dense(48, activation='swish')(layer1)
 output1 = Reshape([48,1])(layer1)
 
 model = Model(inputs=input1,outputs=output1)
@@ -116,10 +114,10 @@ for i, j in enumerate(quantiles):
     modelpath = "./dacon/data/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
-    model.fit(x_train, y1_train, epochs=10000, batch_size=48, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
+    model.fit(x_train, y1_train, epochs=10000, batch_size=64, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
     y1_pred = model.predict(test_data)
-    submission.iloc[:3888,i] = np.array([np.round(x,2) if x > 0 else 0 for x in y1_pred.reshape(3888)])
+    submission.iloc[:3888,i] = np.array([x if x > 0 else 0 for x in y1_pred.reshape(3888)])
 
 for i, j in enumerate(quantiles):
     a = []
@@ -130,10 +128,10 @@ for i, j in enumerate(quantiles):
     modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
     cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=5, factor=0.5, verbose=1)
-    model.fit(x_train, y2_train, epochs=10000, batch_size=48, validation_data=(x_val, y2_val), verbose=2, callbacks=[es,cp,reduce_lr])
+    model.fit(x_train, y2_train, epochs=10000, batch_size=64, validation_data=(x_val, y2_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
     y2_pred = model.predict(test_data)
-    submission.iloc[3888:,i] = np.array([np.round(x,2) if x > 0 else 0 for x in y2_pred.reshape(3888)])
+    submission.iloc[3888:,i] = np.array([x if x > 0 else 0 for x in y2_pred.reshape(3888)])
 
 print(submission)
 print(submission.shape)
