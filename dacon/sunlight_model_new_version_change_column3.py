@@ -8,20 +8,6 @@ submission.index = pd.read_csv('./dacon/data/sample_submission.csv', index_col=0
 # 데이터
 train_data = pd.read_csv('./dacon/data/train/train.csv', header=0)
 
-def split_to_seq(data):
-    temp = []
-    for i in range(48):
-        temp1 = pd.DataFrame()
-        for j in range(int(len(data)/48)):
-            temp2 = data.iloc[j*48+i,:]
-            temp2 = temp2.to_numpy()
-            temp2 = temp2.reshape(1,temp2.shape[0])
-            temp2 = pd.DataFrame(temp2)
-            temp1 = pd.concat([temp1,temp2])
-        x = temp1.to_numpy()
-        temp.append(x)
-    return np.array(temp)
-
 def add_features(data):    # add "GHI"
     data['cos'] = np.cos(np.pi/2 - np.abs(data['Hour']%12 - 6) / 6*np.pi/2)
     data.insert(3, 'GHI', data['DNI'] * data['cos'] + data['DHI'])
@@ -89,8 +75,11 @@ print(y1_data.shape)
 print(y2_data.shape)
 print(test_data.shape)
 
+y1_data = y1_data.reshape(y1_data.shape[0], y1_data.shape[2])
+y2_data = y2_data.reshape(y2_data.shape[0], y2_data.shape[2])
+
 from sklearn.model_selection import train_test_split
-x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x_data, y1_data, y2_data, test_size=0.2, random_state=0)
+x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x_data, y1_data, y2_data, test_size=0.2, shuffle=False, random_state=0)
 print(x_train.shape)
 print(x_val.shape)
 
@@ -120,21 +109,23 @@ print(test_data.shape)
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten, Dropout, Reshape, Input, Concatenate
 
-# input1 = Input(shape=(x_train.shape[1],x_train.shape[2]))
-input1 = Input(shape=(x_train.shape[1],x_train.shape[2]))
-layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
-layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
-layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
-layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(layer1)
-layer1 = Dense(128,activation='relu')(layer1)
-layer1 = Dense(64,activation='relu')(layer1)
-layer1 = Dense(32,activation='relu')(layer1)
-layer1 = Dense(8,activation='relu')(layer1)
-output1 = Dense(1)(layer1)
+def my_model():
+    input1 = Input(shape=(x_train.shape[1],x_train.shape[2]))
+    layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
+    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(16,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Flatten()(layer1)
+    layer1 = Dense(128, activation='relu')(layer1)
+    layer1 = Dense(64, activation='relu')(layer1)
+    layer1 = Dense(32, activation='relu')(layer1)
+    layer1 = Dense(8, activation='relu')(layer1)
+    output1 = Dense(1)(layer1)
 
-model = Model(inputs=input1,outputs=output1)
+    model = Model(inputs=input1,outputs=output1)
 
-model.summary()
+# model.summary()
 
 from tensorflow.keras.backend import mean, maximum
 def quantile_loss(q, y_true, y_pred):   # loss function
@@ -144,6 +135,7 @@ def quantile_loss(q, y_true, y_pred):   # loss function
 quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 for i, j in enumerate(quantiles): # Day 7
     print('Quantile-{} fitting Start'.format(j))
+    model = my_model()
     model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
     from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
     es = EarlyStopping(monitor='val_loss', patience=30, mode='auto')
@@ -159,6 +151,7 @@ for i, j in enumerate(quantiles): # Day 7
 for i, j in enumerate(quantiles): # Day 8
     a = []
     print('Quantile-{} fitting Start'.format(j))
+    model = my_model()
     model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
     from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
     es = EarlyStopping(monitor='val_loss', patience=30, mode='auto')
