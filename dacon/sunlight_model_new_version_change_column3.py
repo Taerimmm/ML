@@ -113,7 +113,6 @@ def my_model():
     input1 = Input(shape=(x_train.shape[1],x_train.shape[2]))
     layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
     layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Conv1D(16,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Flatten()(layer1)
@@ -124,6 +123,7 @@ def my_model():
     output1 = Dense(1)(layer1)
 
     model = Model(inputs=input1,outputs=output1)
+    return model
 
 # model.summary()
 

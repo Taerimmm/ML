@@ -138,7 +138,6 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLRO
 es = EarlyStopping(monitor='val_loss', patience=30, mode='auto')
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, factor=0.25, verbose=1)
 
-
 for a in range(48):
     x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x[a], y1[a], y2[a], train_size=0.2, shuffle=False, random_state=0)
         
@@ -159,23 +158,18 @@ for a in range(48):
         num_temp1 = df_temp1.to_numpy()
 
         if a % 2 == 0:
-            submission.loc[submission.index.str.contains(f"Day7_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp1
+            submission.loc[submission.index.str.contains(f"Day7_{int(a/2)}h00m"), [f"q_{j:.1f}"]] = num_temp1
         else:
-            submission.loc[submission.index.str.contains(f"Day7_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp1
+            submission.loc[submission.index.str.contains(f"Day7_{int(a/2)}h30m"), [f"q_{j:.1f}"]] = num_temp1
         print('Quantile-{} fitting End'.format(j))
     
-    if a == 20:
-        break
-
-
-        '''
     for i, j in enumerate(quantiles): # Day 8
         print('Quantile-{} fitting Start'.format(j))
         model = my_model()
         model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
         modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
         cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-        model.fit(x_train, y1_train, epochs=5000, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
+        model.fit(x_train, y2_train, epochs=5000, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
         x_day8 = []
         for k in range(81):
@@ -186,12 +180,12 @@ for a in range(48):
         num_temp2 = df_temp2.to_numpy()
 
         if a % 2 == 0:
-            submission.loc[submission.index.str.contains(f"Day8_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp2
+            submission.loc[submission.index.str.contains(f"Day8_{int(a/2)}h00m"), [f"q_{j:.1f}"]] = num_temp2
         else:
-            submission.loc[submission.index.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
+            submission.loc[submission.index.str.contains(f"Day8_{int(a/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
         print('Quantile-{} fitting End'.format(j))
-    '''
+    
 print(submission)
 print(submission.shape)
 
