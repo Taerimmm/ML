@@ -109,16 +109,15 @@ from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten
 
 def my_model():
     input1 = Input(shape=(x.shape[2],x.shape[3]))
-    layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
-    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(input1)   # swish
     layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Flatten()(layer1)
+    layer1 = Dense(256, activation='relu')(layer1)
     layer1 = Dense(128, activation='relu')(layer1)
     layer1 = Dense(64, activation='relu')(layer1)
     layer1 = Dense(32, activation='relu')(layer1)
-    layer1 = Dense(16, activation='relu')(layer1)
     output1 = Dense(1)(layer1)
 
     model = Model(inputs=input1,outputs=output1)
@@ -135,7 +134,7 @@ quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 from sklearn.model_selection import train_test_split
 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-es = EarlyStopping(monitor='val_loss', patience=30, mode='auto')
+es = EarlyStopping(monitor='val_loss', patience=20, mode='auto')
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, factor=0.25, verbose=1)
 
 for a in range(48):
@@ -148,7 +147,7 @@ for a in range(48):
         model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
         modelpath = "./dacon/data/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
         cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-        model.fit(x_train, y1_train, epochs=5000, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
+        model.fit(x_train, y1_train, epochs=500, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
         x_day7 = []
         for k in range(81):
@@ -170,7 +169,7 @@ for a in range(48):
         model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
         modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
         cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
-        model.fit(x_train, y2_train, epochs=5000, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
+        model.fit(x_train, y2_train, epochs=500, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
         x_day8 = []
         for k in range(81):
@@ -192,6 +191,6 @@ for a in range(48):
 print(submission)
 print(submission.shape)
 
-submission.to_csv('./dacon/data/sample_submission_new_version4.csv')
+submission.to_csv('./dacon/data/sample_submission_final_version2.csv')
 
 # 01:48 ~ 11:27
