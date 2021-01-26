@@ -109,16 +109,16 @@ from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten
 
 def my_model():
     input1 = Input(shape=(x.shape[2],x.shape[3]))
-    layer1 = Conv1D(256,2,activation='swish',padding='same',strides=1)(input1)   # swish
-    layer1 = Conv1D(128,2,activation='swish',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(64,2,activation='swish',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(16,2,activation='swish',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
+    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Flatten()(layer1)
-    layer1 = Dense(128, activation='swish')(layer1)
-    layer1 = Dense(64, activation='swish')(layer1)
-    layer1 = Dense(32, activation='swish')(layer1)
-    layer1 = Dense(16, activation='swish')(layer1)
-    layer1 = Dense(8, activation='swish')(layer1)
+    layer1 = Dense(128, activation='relu')(layer1)
+    layer1 = Dense(64, activation='relu')(layer1)
+    layer1 = Dense(32, activation='relu')(layer1)
+    layer1 = Dense(16, activation='relu')(layer1)
     output1 = Dense(1)(layer1)
 
     model = Model(inputs=input1,outputs=output1)
@@ -140,7 +140,8 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, factor=0.25, verb
 
 for a in range(48):
     x_train, x_val, y1_train, y1_val, y2_train, y2_val = train_test_split(x[a], y1[a], y2[a], train_size=0.2, shuffle=False, random_state=0)
-        
+    print('{}\'s loop Start.format(a))
+
     for i, j in enumerate(quantiles): # Day 7
         print('Quantile-{} fitting Start'.format(j))
         model = my_model()
@@ -185,8 +186,12 @@ for a in range(48):
             submission.loc[submission.index.str.contains(f"Day8_{int(a/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
         print('Quantile-{} fitting End'.format(j))
+
+    print('{}\'s loop End.format(a))
     
 print(submission)
 print(submission.shape)
 
 submission.to_csv('./dacon/data/sample_submission_new_version4.csv')
+
+# 01:48 ~ 11:27
