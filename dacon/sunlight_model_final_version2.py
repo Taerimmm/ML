@@ -111,12 +111,12 @@ def my_model():
     input1 = Input(shape=(x.shape[2],x.shape[3]))
     layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(input1)   # swish
     layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
-    layer1 = Conv1D(64,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Flatten()(layer1)
-    layer1 = Dense(256, activation='relu')(layer1)
     layer1 = Dense(128, activation='relu')(layer1)
-    layer1 = Dense(64, activation='relu')(layer1)
+    layer1 = Dense(128, activation='relu')(layer1)
+    layer1 = Dense(32, activation='relu')(layer1)
     layer1 = Dense(32, activation='relu')(layer1)
     output1 = Dense(1)(layer1)
 
@@ -145,7 +145,8 @@ for a in range(48):
         print('Quantile-{} fitting Start'.format(j))
         model = my_model()
         model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
-        modelpath = "./dacon/data/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
+        # modelpath = "./dacon/data/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
+        modelpath = "../data/modelcheckpoint/sunlight_model_day7_{}_qauntile{}.hdf5".format(i+1,j)
         cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
         model.fit(x_train, y1_train, epochs=500, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 
@@ -167,7 +168,8 @@ for a in range(48):
         print('Quantile-{} fitting Start'.format(j))
         model = my_model()
         model.compile(loss=lambda y_true,y_pred : quantile_loss(j,y_true,y_pred), optimizer='adam', metrics=[lambda y_true,y_pred : quantile_loss(j,y_true,y_pred)])
-        modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
+        # modelpath = "./dacon/data/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
+        modelpath = "../data/modelcheckpoint/sunlight_model_day8_{}_qauntile{}.hdf5".format(i+1,j)
         cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
         model.fit(x_train, y2_train, epochs=500, batch_size=32, validation_data=(x_val, y1_val), verbose=2, callbacks=[es,cp,reduce_lr])
 

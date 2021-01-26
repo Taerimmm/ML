@@ -110,13 +110,13 @@ from tensorflow.keras.layers import Dense, Conv1D, Conv2D, MaxPooling1D, Flatten
 
 def my_model():
     input1 = Input(shape=(x_train.shape[1],x_train.shape[2]))
-    layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(input1)   # swish
-    layer1 = Conv1D(32,2,activation='relu',padding='same',strides=1)(layer1)
+    layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(input1)   # swish
+    layer1 = Conv1D(256,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Conv1D(128,2,activation='relu',padding='same',strides=1)(layer1)
     layer1 = Flatten()(layer1)
-    layer1 = Dense(128, activation='relu')(layer1)
-    layer1 = Dense(128, activation='relu')(layer1)
+    layer1 = Dense(64, activation='relu')(layer1)
+    layer1 = Dense(64, activation='relu')(layer1)
     layer1 = Dense(32, activation='relu')(layer1)
     layer1 = Dense(32, activation='relu')(layer1)
     output1 = Dense(1)(layer1)
