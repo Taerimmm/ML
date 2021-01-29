@@ -17,14 +17,12 @@ y = dataset.target
 
 print(x.shape, y.shape)  # (150, 4) ,(150,)
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=77, shuffle=True)
-
 kfold = KFold(n_splits=5, shuffle=True)
 
 # 2. 모델
 model = LinearSVC()
 
-scores = cross_val_score(model, x_train, y_train, cv=kfold) # fit, score가 다 포함
+scores = cross_val_score(model, x, y, cv=kfold) # fit, score가 다 포함
 print('scores :', scores)
 
 '''
