@@ -26,7 +26,7 @@ parameters = [{'RandomForest__n_estimators':[100,200,300],
 # 2. 모델
 for scaler in [MinMaxScaler, StandardScaler]:
     pipe = Pipeline([(scaler.__name__, scaler()), ('RandomForest', RandomForestRegressor())])
-    model = RandomizedSearchCV(pipe, parameters, cv=kfold)
+    model = GridSearchCV(pipe, parameters, cv=kfold)
 
     scores = cross_val_score(model, x, y, cv=kfold)
 

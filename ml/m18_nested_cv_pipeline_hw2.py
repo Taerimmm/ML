@@ -24,9 +24,10 @@ parameters = [{'randomforestclassifier__n_estimators':[100,200,300],
               'randomforestclassifier__n_jobs':[-1]}]
 
 # 2. 모델
-pipe = make_pipeline(MinMaxScaler(), RandomForestClassifier())
-model = RandomizedSearchCV(pipe, parameters, cv=kfold)
+for scaler in [MinMaxScaler, StandardScaler]:
+    pipe = make_pipeline(MinMaxScaler(), RandomForestClassifier())
+    model = RandomizedSearchCV(pipe, parameters, cv=kfold)
 
-scores = cross_val_score(model, x, y, cv=kfold)
+    scores = cross_val_score(model, x, y, cv=kfold)
 
-print('교차검증점수 :', scores)
+    print('교차검증점수 :', scores)
