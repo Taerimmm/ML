@@ -76,3 +76,6 @@ for i, j in enumerate([RandomForestClassifier, XGBClassifier]):
     y_pred = model.predict(x_test)
     print(j.__name__ + '의 최종 정답률 :', accuracy_score(y_test, y_pred))
     print(j.__name__ + '의 최종 정답률 :', model.score(x_test, y_test))
+
+# RandomForestClassifier의 최종 정답률 : 0.9122807017543859
+# XGBClassifier의 최종 정답률 : 0.9122807017543859

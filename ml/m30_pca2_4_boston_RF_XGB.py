@@ -74,5 +74,8 @@ for i, j in enumerate([RandomForestRegressor, XGBRegressor]):
        model.fit(x_train, y_train, eval_metric='logloss')
         
     y_pred = model.predict(x_test)
-    print(j.__name__ + '의 최종 정답률 :', r2_score(y_test, y_pred))
-    print(j.__name__ + '의 최종 정답률 :', model.score(x_test, y_test))
+    print(j.__name__ + '의 최종 R2 :', r2_score(y_test, y_pred))
+    print(j.__name__ + '의 최종 R2 :', model.score(x_test, y_test))
+
+# RandomForestRegressor의 최종 R2 : 0.7929724510970513
+# XGBRegressor의 최종 R2 : 0.7948564515098473
