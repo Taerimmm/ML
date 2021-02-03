@@ -44,9 +44,12 @@ CV = [GridSearchCV, RandomizedSearchCV]
 result = []
 for search in CV:
     model = search(XGBClassifier(n_jobs=-1, use_label_encoder=False), parameters, cv=kfold)
-
-    model.fit(x_train, y_train, eval_metric='mlogloss', verbose=True, eval_set=[(x_train, y_train), (x_test, y_test)])
+    
+    model.fit(x_train, y_train, eval_metric='mlogloss', verbose=True, eval_set=[(x_train, y_train), (x_test, y_test)],
+              early_stopping_rounds=10)
     # eval_metric -> compile에서 metrics랑 같은 역할
+
+    model.save_model('../data/xgb_save/m34_2_{}.xgb.model'.format(search))
 
     y_pred = model.predict(x_test)
     
@@ -58,3 +61,10 @@ for i, j in enumerate(CV):
     print(j.__name__ + '의 최적의 param :', result[3*i+0])
     print(j.__name__ + '의 최종 정답률 :', result[3*i+1])
     print(j.__name__ + '의 최종 정답률 :', result[3*i+2])
+
+print('=============== model load ===============')
+
+for i in CV:
+    model = XGBClassifier()
+    model.load_model('../data/xgb_save/m34_2_{}.xgb.model'.format(i))
+    print(i.__name__ + '의 최종 정답률 :', model.score(x_test, y_test))
