@@ -11,8 +11,6 @@ from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, Flatten,
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
-from tensorflow.keras.optimizers import Adam
-
 # 1. 데이터
 train_data = pd.read_csv("./dacon2/data/train.csv", index_col=0, header=0)
 print(train_data)
@@ -23,7 +21,6 @@ idx = 999
 img = train_data.loc[idx, '0':].values.reshape(28, 28).astype(int)
 digit = train_data.loc[idx, 'digit']
 letter = train_data.loc[idx, 'letter']
-
 plt.title('Index: %i, Digit: %s, Letter: %s'%(idx, digit, letter))
 plt.imshow(img)
 plt.show()
@@ -46,13 +43,15 @@ print(x_train.shape, y_train.shape)     # (2048, 28, 28, 1) (2048, 10)
 # x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.1, stratify=y_train)
 
 datagen = ImageDataGenerator(
-    width_shift_range=(-1,1),  
-    height_shift_range=(-1,1))
+    rotation_range=10,
+    zoom_range=0.1,
+    width_shift_range=0.1,  
+    height_shift_range=0.1)
 
 datagen2 = ImageDataGenerator()
 
-steps = 40
-skfold = StratifiedKFold(n_splits=steps, random_state=42, shuffle=True)
+steps = 20
+skfold = StratifiedKFold(n_splits=steps, shuffle=True)
 
 # 2. 모델
 def cnn_model(x_train):
@@ -77,120 +76,19 @@ def cnn_model(x_train):
 
     return model
 
-def cnn_model2(x_train):
-    inputs = Input(shape=x_train.shape[1:])
-    x = inputs
-    _x = Conv2D(128,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(256,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(512,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(128,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    x = _x
-    _x = Conv2D(128,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(256,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(512,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(128,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    x = x+_x
-    x = MaxPooling2D(2)(x)
-    _x = Conv2D(128,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(256,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(512,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(128,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    x = x+_x
-    x = MaxPooling2D(2)(x)
-    _x = Conv2D(128,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(256,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(512,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(1024,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(128,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    x = x+_x
-    x = MaxPooling2D(2)(x)
-    _x = Conv2D(512,3,padding='same')(x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(128,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    _x = Conv2D(128,3,padding='same')(_x)
-    _x = BatchNormalization()(_x)
-    _x = Activation('relu')(_x)
-    x = x+_x
-    x = MaxPooling2D(2)(x)
-    x = Flatten()(x)
-    x = Dense(2048)(x)
-    x = Dense(10,activation='softmax')(x)
-    outputs=x
-    model = Model(inputs=inputs,outputs=outputs)
-
-    return model
-
 val_acc = []
 for i, (train_idx, val_idx) in enumerate(skfold.split(x_train, y_train.argmax(1))):
     x_train_, x_val_ = x_train[train_idx], x_train[val_idx]
     y_train_, y_val_ = y_train[train_idx], y_train[val_idx]
     
-    model = cnn_model2(x_train)
+    model = cnn_model(x_train)
 
     filepath = './dacon2/data/vision_model_{}.hdf5'.format(i)
     es = EarlyStopping(monitor='val_loss', patience=160, mode='auto')
     cp = ModelCheckpoint(filepath=filepath, monitor='val_loss', save_best_only=True, mode='auto')
     lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=100)
 
-    model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.002, epsilon=None), metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     hist = model.fit_generator(datagen.flow(x_train_, y_train_, batch_size=32), epochs=2000,
                validation_data=(datagen.flow(x_val_, y_val_)), verbose=2, callbacks=[es, cp, lr])
 
@@ -232,40 +130,3 @@ for i in range(steps):
 
 print(submission2)
 submission2.to_csv('./dacon2/data/submission_model_mean.csv')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-# PCA
-from sklearn.decomposition import PCA
-
-x = train_data.iloc[:,2:]
-y = train_data.iloc[:,:2]
-print(x.shape, y.shape)
-
-pca = PCA()
-x = pca.fit_transform(x)
-
-cumsum = np.cumsum(pca.explained_variance_ratio_)
-print(cumsum)
-
-d = np.argmax(cumsum >= 0.999) + 1
-print('d :', d)
-
-pca = PCA(n_components=d)
-x = pca.fit_transform(x)
-
-x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2, random_state=45)
-'''
