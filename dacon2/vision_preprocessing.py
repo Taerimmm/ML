@@ -11,6 +11,8 @@ from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, Flatten,
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
+from tensorflow.keras.optimizers import Adam
+
 # 1. 데이터
 train_data = pd.read_csv("./dacon2/data/train.csv", index_col=0, header=0)
 print(train_data)
@@ -44,14 +46,13 @@ print(x_train.shape, y_train.shape)     # (2048, 28, 28, 1) (2048, 10)
 # x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.1, stratify=y_train)
 
 datagen = ImageDataGenerator(
-    rotation_range=10,
-    width_shift_range=0.1,  
-    height_shift_range=0.1)
+    width_shift_range=(-1,1),  
+    height_shift_range=(-1,1))
 
 datagen2 = ImageDataGenerator()
 
-steps = 20
-skfold = StratifiedKFold(n_splits=steps, shuffle=True)
+steps = 40
+skfold = StratifiedKFold(n_splits=steps, random_state=42, shuffle=True)
 
 # 2. 모델
 def cnn_model(x_train):
@@ -185,13 +186,13 @@ for i, (train_idx, val_idx) in enumerate(skfold.split(x_train, y_train.argmax(1)
     model = cnn_model2(x_train)
 
     filepath = './dacon2/data/vision_model_{}.hdf5'.format(i)
-    es = EarlyStopping(monitor='val_accuracy', patience=200, mode='auto')
-    cp = ModelCheckpoint(filepath=filepath, monitor='val_accuracy', save_best_only=True, mode='auto')
-    lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=100)
+    es = EarlyStopping(monitor='val_loss', patience=160, mode='auto')
+    cp = ModelCheckpoint(filepath=filepath, monitor='val_loss', save_best_only=True, mode='auto')
+    lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=100)
 
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.002, epsilon=None), metrics=['accuracy'])
     hist = model.fit_generator(datagen.flow(x_train_, y_train_, batch_size=32), epochs=2000,
-               validation_data=(datagen2.flow(x_val_, y_val_)), verbose=2, callbacks=[es, cp, lr])
+               validation_data=(datagen.flow(x_val_, y_val_)), verbose=2, callbacks=[es, cp, lr])
 
     val_acc.append(max(hist.history['val_accuracy']))
 
