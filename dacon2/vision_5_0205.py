@@ -153,7 +153,7 @@ print(result3.shape)
 
 # test_data
 ts_data = pd.read_csv("./dacon2/data/test.csv", index_col = 0).values
-ts_X = tf.convert_to_tensor(ts_data[:, 2:], dtype = tf.float32)
+ts_X = tf.convert_to_tensor(ts_data[:, 1:], dtype = tf.float32)
 
 aa = tf.reshape(ts_X[1000], (-1, 28, 28, 1))
 result1 = tf.keras.layers.experimental.preprocessing.Resizing(64, 64)(aa)
