@@ -35,7 +35,7 @@ tr_X = tf.convert_to_tensor(tr_data[:, 2:], dtype = tf.float32)
 tr_Y = tf.squeeze(tf.convert_to_tensor(tr_data[:, 0], dtype = tf.int32))
 
 resize = tf.reshape(tr_X, (-1, 28, 28, 1))
-resize_train = tf.keras.layers.experimental.preprocessing.Resizing(256, 256)(resize)
+resize_train = tf.keras.layers.experimental.preprocessing.Resizing(64, 64)(resize)
 
 x_train = resize_train.numpy()
 y_train = to_categorical(tr_Y.numpy())
@@ -46,7 +46,7 @@ print(y_train.shape)
 # Test_Data
 ts_X = tf.convert_to_tensor(ts_data[:int(len(ts_data)/10)][:,1:], dtype = tf.float32)
 resize = tf.reshape(ts_X, (-1, 28, 28, 1))
-resize_test = tf.keras.layers.experimental.preprocessing.Resizing(256, 256)(resize)
+resize_test = tf.keras.layers.experimental.preprocessing.Resizing(64, 64)(resize)
 
 print(resize_test.shape)
 print(type(resize_test))
@@ -57,7 +57,7 @@ x_test = resize_test.numpy()
 for i in range(1,10):
     ts_X_ = tf.convert_to_tensor(ts_data[int(len(ts_data)/10) * i:int(len(ts_data)/10) * (i+1)][:,1:], dtype = tf.float32)
     resize = tf.reshape(ts_X_, (-1, 28, 28, 1))
-    resize_test = tf.keras.layers.experimental.preprocessing.Resizing(256, 256)(resize)
+    resize_test = tf.keras.layers.experimental.preprocessing.Resizing(64, 64)(resize)
 
     x_test = np.append(x_test, resize_test.numpy(), axis=0)
 
