@@ -16,7 +16,10 @@ from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropou
 
 model = Sequential()
 model.add(Conv2D(32, (3,3), input_shape=x_train.shape[1:]))
+model.add(Conv2D(64, (3,3), activation='relu'))
+model.add(Flatten())
+model.add(Dense(10))
 model.add(Dense(1, activation='sigmoid'))
 
-model.compile(loss='binary_crossentropy', optimizer='adam')
-model.fit(x_train, y_train, epochs=200, batch_size=32, validation_split=0.2, verbose=2)
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
+model.fit(x_train, y_train, epochs=200, batch_size=32, validation_data=(x_test, y_test), verbose=2)
