@@ -29,7 +29,7 @@ test_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
 xy_train = train_datagen.flow_from_directory(
     '../data/image/human',
     target_size=(150,150),
-    batch_size=3,
+    batch_size=20,
     class_mode='binary',
     shuffle=True,
     subset='training'
@@ -38,7 +38,7 @@ xy_train = train_datagen.flow_from_directory(
 xy_val = train_datagen.flow_from_directory(
     '../data/image/human',
     target_size=(150,150),
-    batch_size=3,
+    batch_size=20,
     class_mode='binary',
     shuffle=False,
     subset='validation'
@@ -54,12 +54,25 @@ model.add(Conv2D(256, (3,3), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=3))
 model.add(Dropout(0.2))
 model.add(Flatten())
+model.add(Dense(512, activation='relu'))
 model.add(Dense(256, activation='relu'))
-model.add(Dense(256, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
 es = EarlyStopping(monitor='val_loss', patience=20, mode='auto')
 lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=7, mode='auto')
-model.fit_generator(xy_train, epochs=200, validation_data=xy_val, validation_steps=4, callbacks=[es, lr])
+history = model.fit_generator(xy_train, epochs=200, validation_data=xy_val, validation_steps=4, callbacks=[es, lr])
+
+acc = history.history['acc']
+val_acc = history.history['val_acc']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+print('acc :', acc[-1])
+print('val_acc :', val_acc[-1])
+
+# acc : 0.6270698308944702
+# val_acc : 0.4375

@@ -75,19 +75,24 @@ model.add(Conv2D(256, (3,3), padding='same', activation='relu', input_shape=(150
 model.add(Conv2D(256, (3,3), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=3))
 model.add(Dropout(0.2))
-model.add(Conv2D(512, (3,3), padding='same', activation='relu'))
-model.add(Conv2D(512, (3,3), padding='same', activation='relu'))
-model.add(MaxPooling2D(pool_size=3))
-model.add(Dropout(0.2))
 model.add(Flatten())
 model.add(Dense(256, activation='relu'))
-model.add(Dense(256, activation='relu'))
 model.add(Dense(64, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(16, activation='relu'))
 model.add(Dense(16, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
-model.fit(x_train, y_train, epochs=100, batch_size=32, validation_data=(x_val, y_val), verbose=2)
+es = EarlyStopping(monitor='val_loss', patience=20, mode='auto')
+lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=7, mode='auto')
+history = model.fit(x_train, y_train, epochs=200, batch_size=32, validation_data=(x_val, y_val), verbose=2, callbacks=[es, lr])
+
+acc = history.history['acc']
+val_acc = history.history['val_acc']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+print('acc :', acc[-1])
+print('val_acc :', val_acc[-1])
+# acc : 0.9856011271476746
+# val_acc : 0.5072045922279358
