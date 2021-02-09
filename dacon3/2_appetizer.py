@@ -11,7 +11,7 @@ from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Input, Dense, Conv2D, BatchNormalization, Concatenate, ReLU
 from tensorflow.keras.layers import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D, SpatialDropout2D
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-'''
+
 # 노이즈 제거 fastNlMeansDenoising 사용 ?
 
 img = cv2.imread('../Data/dirty_mnist_2nd/42672.png')
@@ -34,11 +34,11 @@ for i in range(size):
     img = cv2.imread('../Data/dirty_mnist_2nd/{0:05d}.png'.format(i))
 
     denoised_img = cv2.fastNlMeansDenoising(img, None, 30, 15, 21)
+    denoised_img = denoised_img / 255
 
     a.append(denoised_img)
 
 x_train = np.array(a)
-x_train = x_train / 255
 print(x_train)
 print(type(x_train))
 print(x_train.shape)
@@ -50,7 +50,7 @@ y_train = y_train[:size]
 print(y_train)
 print(y_train.shape)
 
-steps = 2
+steps = 5
 kfold = KFold(n_splits=steps, random_state=45, shuffle=True)
 
 # 2. 모델
@@ -241,3 +241,4 @@ for i in range(steps):
 
 # print(submission)
 # submission.to_csv('./dacon3/data/vision_2_submission.csv')
+'''
