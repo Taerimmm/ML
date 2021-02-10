@@ -38,7 +38,7 @@ print(y_train.shape)
 steps = 5
 kfold = KFold(n_splits=steps, random_state=42, shuffle=True)
 
-'''
+
 # VGG 모델
 inputs = Input(shape=(256, 256, 1), dtype='float32', name='input')
  
@@ -46,28 +46,28 @@ layer = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer
 layer = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
 layer = MaxPooling2D((2,2))(layer)
  
-layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = MaxPooling2D((2,2))(layer)
+# layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = MaxPooling2D((2,2))(layer)
  
-layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = MaxPooling2D((2,2))(layer)
+# layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = MaxPooling2D((2,2))(layer)
  
-layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = MaxPooling2D((2,2))(layer)
+# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = MaxPooling2D((2,2))(layer)
  
-layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-layer = MaxPooling2D((2,2))(layer)
+# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+# layer = MaxPooling2D((2,2))(layer)
  
 layer = Flatten()(layer)
-layer = Dense(4096, kernel_initializer='he_normal')(layer)
-layer = Dense(2048, kernel_initializer='he_normal')(layer)
+# layer = Dense(4096, kernel_initializer='he_normal')(layer)
+# layer = Dense(2048, kernel_initializer='he_normal')(layer)
 layer = Dense(1024, kernel_initializer='he_normal')(layer)
 outputs = Dense(26, activation='softmax')(layer)
 
@@ -77,14 +77,30 @@ model.summary()
 
 
 # 훈련
-
+i=0
 filepath = './dacon3/data/vision_2_model_{}.hdf5'.format(i)
 es = EarlyStopping(monitor='val_loss', patience=160, mode='auto')
 cp = ModelCheckpoint(filepath=filepath, monitor='val_loss', save_best_only=True, mode='auto')
 lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=100)
 
-
 model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=2e-5), metrics=['acc'])
+history = model.fit(x_train, y_train, epochs=300, batch_size=256, validation_split=0.2, callbacks=[es,cp,lr])
 
-history = model.fit_generator(train_generator, epochs=300, validation_data=val_generator, validation_steps=16, callbacks=[es,cp,lr])
-'''
+
+# es = EarlyStopping(monitor='val_loss', patience=160, mode='auto')
+# lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=100)
+
+# for i, (train_idx, val_idx) in enumerate(kfold.split(x_train, y_train)):
+#     x_train_, x_val_ = x_train[train_idx], x_train[val_idx]
+#     y_train_, y_val_ = y_train.iloc[train_idx,:], y_train.iloc[val_idx,:]
+    
+#     filepath = './dacon3/data/vision_2_model_{}.hdf5'.format(i)
+#     cp = ModelCheckpoint(filepath=filepath, monitor='val_loss', save_best_only=True, mode='auto')
+
+#     model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=2e-5), metrics=['acc'])
+
+
+#     history = model.fit(x_train_, y_train_, epochs=300, validation_data=(x_val_, y_val_), callbacks=[es,cp,lr])
+
+
+# Test
