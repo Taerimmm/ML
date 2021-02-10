@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
 
+from sklearn.model_selection import KFold
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.models import Model
@@ -12,32 +13,32 @@ from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    validation_split=0.2)
-val_datagen = ImageDataGenerator(
-    rescale=1./255,
-    validation_split=0.2)
+    rescale=1./255)
 test_datagen = ImageDataGenerator(
     rescale=1./255)
 
 ''' ImgDatagen으로 50000개 image 로드 해보기 '''
-# Found 40000 images belonging to 1 classes.
 train_generator = train_datagen.flow_from_directory(
     '../data', 
     classes=['dirty_mnist_2nd'],
-    batch_size=16, 
+    batch_size=50000, 
     target_size=(256, 256), 
     color_mode='grayscale',
     class_mode=None,
-    subset='training')
-val_generator = val_datagen.flow_from_directory(
-    '../data/dirty_mnist_2nd', 
-    batch_size=16, 
-    target_size=(256, 256), 
-    color_mode='grayscale',
-    class_mode=None,
-    subset='validation')
+    shuffle=False)
 
+for i in train_generator:
+    x_train = i
+    break
+print(x_train.shape)
+
+y_train = pd.read_csv('./dacon3/data/dirty_mnist_2nd_answer.csv', index_col=0, header=0)
+print(y_train.shape)
+
+steps = 5
+kfold = KFold(n_splits=steps, random_state=42, shuffle=True)
+
+'''
 # VGG 모델
 inputs = Input(shape=(256, 256, 1), dtype='float32', name='input')
  
@@ -86,3 +87,4 @@ lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=100)
 model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=2e-5), metrics=['acc'])
 
 history = model.fit_generator(train_generator, epochs=300, validation_data=val_generator, validation_steps=16, callbacks=[es,cp,lr])
+'''

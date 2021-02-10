@@ -2,6 +2,7 @@ import time
 import datetime
 import numpy as np
 import pandas as pd
+import cv2
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 start_time = time.time()
