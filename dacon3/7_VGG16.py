@@ -6,7 +6,7 @@ from PIL import Image
 from sklearn.model_selection import KFold
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.vgg16 import VGG16
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, Flatten
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.optimizers import RMSprop
@@ -22,7 +22,16 @@ train_generator = train_datagen.flow_from_directory(
     '../data', 
     classes=['dirty_mnist_2nd'],
     batch_size=50000, 
-    target_size=(256, 256), 
+    target_size=(64, 64), 
+    color_mode='grayscale',
+    class_mode=None,
+    shuffle=False)
+
+test_generator = test_datagen.flow_from_directory(
+    '../data', 
+    classes=['test_dirty_mnist_2nd'],
+    batch_size=5000, 
+    target_size=(64, 64), 
     color_mode='grayscale',
     class_mode=None,
     shuffle=False)
@@ -40,25 +49,25 @@ kfold = KFold(n_splits=steps, random_state=42, shuffle=True)
 
 
 # VGG 모델
-inputs = Input(shape=(256, 256, 1), dtype='float32', name='input')
+inputs = Input(shape=x_train.shape[1:], dtype='float32', name='input')
  
 layer = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(inputs)
 layer = Conv2D(64, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
 layer = MaxPooling2D((2,2))(layer)
  
-# layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = MaxPooling2D((2,2))(layer)
+layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(128, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = MaxPooling2D((2,2))(layer)
  
-# layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = MaxPooling2D((2,2))(layer)
+layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(256, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = MaxPooling2D((2,2))(layer)
  
-# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = MaxPooling2D((2,2))(layer)
+layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = MaxPooling2D((2,2))(layer)
  
 # layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
 # layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
@@ -67,9 +76,9 @@ layer = MaxPooling2D((2,2))(layer)
  
 layer = Flatten()(layer)
 # layer = Dense(4096, kernel_initializer='he_normal')(layer)
-# layer = Dense(2048, kernel_initializer='he_normal')(layer)
+layer = Dense(2048, kernel_initializer='he_normal')(layer)
 layer = Dense(1024, kernel_initializer='he_normal')(layer)
-outputs = Dense(26, activation='softmax')(layer)
+outputs = Dense(26, activation='sigmoid')(layer)
 
 model = Model(inputs=inputs, outputs=outputs)
 
@@ -84,7 +93,7 @@ cp = ModelCheckpoint(filepath=filepath, monitor='val_loss', save_best_only=True,
 lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=100)
 
 model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=2e-5), metrics=['acc'])
-history = model.fit(x_train, y_train, epochs=300, batch_size=256, validation_split=0.2, callbacks=[es,cp,lr])
+history = model.fit(x_train, y_train, epochs=3, batch_size=256, validation_split=0.2, callbacks=[es,cp,lr])
 
 
 # es = EarlyStopping(monitor='val_loss', patience=160, mode='auto')
@@ -99,8 +108,20 @@ history = model.fit(x_train, y_train, epochs=300, batch_size=256, validation_spl
 
 #     model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=2e-5), metrics=['acc'])
 
-
-#     history = model.fit(x_train_, y_train_, epochs=300, validation_data=(x_val_, y_val_), callbacks=[es,cp,lr])
-
+#     history = model.fit(x_train_, y_train_, epochs=50000, validation_data=(x_val_, y_val_), callbacks=[es,cp,lr])
 
 # Test
+submission = pd.read_csv('./dacon3/data/sample_submission.csv', index_col=0, header=0)
+
+result = 0
+steps = 1
+for i in range(steps):
+    model = load_model('./dacon3/data/vision_2_model_{}.hdf5'.format(i))
+
+    result += model.predict_generator(test_generator) / steps
+
+print(result)
+
+
+print(submission)
+submission.to_csv('./dacon3/data/submission_vgg16.csv')
