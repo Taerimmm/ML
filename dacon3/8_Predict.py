@@ -30,6 +30,9 @@ for i in range(steps):
     print(result)
 print(np.array(result).shape)
 submission += np.array(result)
+print(submission)
 
-# print(submission)
+for i in range(len(submission.columns)):
+    submission.iloc[:,i] = np.where(submission.iloc[:,i] > 0.5, 1, 0)
+print(submission)
 submission.to_csv('./dacon3/data/submission_vgg16.csv')
