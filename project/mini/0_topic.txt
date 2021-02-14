@@ -1,0 +1,18 @@
+
+Mel Spectrogram 을 이용한 음원 분석 및 추천 구현?
+
+- 컨텐츠 기반 필터링
+  -> 딥러닝 기술 활용
+  -> 오디오 원본의 웨이브 시그널을 쪼개어 각 조각마다 푸리에(fourier) 변환을 한 후 일련의 과정을 거치면 멜 스펙트로그램이 만들어 진다고 한다.
+- 음원 추출
+- 푸리에 변환
+- 멜 스펙트로그램
+- 노래 장르?
+
+장르별 100곡을 선정하여 (순위 기준?) librosa 라이브러리를 이용하여 분석한 후
+특정 wav or mp3 파일을 넣어서 장르를 분류한다.
+파일은 유튜브에서 추출하는 방법을 사용할까 한다.
+
+# pip install librosa
+# pip install pytube
+# conda install -c conda-forge ffmpeg
