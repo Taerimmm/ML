@@ -19,20 +19,20 @@ for i in test_generator:
     x_test = i
     break
 
-submission = pd.read_csv('./dacon3/data/sample_submission.csv', index_col=0, header=0)
+submission = pd.read_csv('./dacon3/data/sample_submission.csv')
 
 result = 0
-steps = 1
+steps = 5
 for i in range(steps):
     model = load_model('./dacon3/data/vision_2_model_{}.hdf5'.format(i))
 
     result += model.predict(x_test) / steps
     print(result)
 print(np.array(result).shape)
-submission += np.array(result)
+submission.iloc[:,1:] = np.array(result)
 print(submission)
 
-for i in range(len(submission.columns)):
+for i in range(1,len(submission.columns)):
     submission.iloc[:,i] = np.where(submission.iloc[:,i] > 0.5, 1, 0)
 print(submission)
 submission.to_csv('./dacon3/data/submission_vgg16.csv')

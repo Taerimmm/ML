@@ -75,13 +75,13 @@ layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initialize
 layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
 layer = MaxPooling2D((2,2))(layer)
  
-# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
-# layer = MaxPooling2D((2,2))(layer)
+layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = Conv2D(512, (3, 3), activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer=l2(0.01))(layer)
+layer = MaxPooling2D((2,2))(layer)
  
 layer = Flatten()(layer)
-# layer = Dense(4096, kernel_initializer='he_normal')(layer)
+layer = Dense(4096, kernel_initializer='he_normal')(layer)
 layer = Dense(2048, kernel_initializer='he_normal')(layer)
 layer = Dense(1024, kernel_initializer='he_normal')(layer)
 outputs = Dense(26, activation='sigmoid')(layer)
@@ -107,7 +107,7 @@ for i, (train_idx, val_idx) in enumerate(kfold.split(x_train, y_train)):
     history = model.fit(x_train_, y_train_, epochs=50000, validation_data=(x_val_, y_val_), callbacks=[es,cp,lr])
 
 # Test
-submission = pd.read_csv('./dacon3/data/sample_submission.csv', index_col=0, header=0)
+submission = pd.read_csv('./dacon3/data/sample_submission.csv')
 
 result = 0
 for i in range(steps):
@@ -115,10 +115,10 @@ for i in range(steps):
 
     result += model.predict(x_test) / steps
     
-submission += np.array(result)
+submission.iloc[:,1:] = np.array(result)
 print(submission)
 
-for i in range(len(submission.columns)):
+for i in range(1,len(submission.columns)):
     submission.iloc[:,i] = np.where(submission.iloc[:,i] > 0.5, 1, 0)
 print(submission)
 submission.to_csv('./dacon3/data/submission_vgg16.csv')
