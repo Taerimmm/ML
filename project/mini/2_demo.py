@@ -17,6 +17,7 @@ plt.xlabel('Time (samples)')
 plt.ylabel('Amplitude')
 plt.show()
 
+
 # fft - fast Fourier transform
 n_fft = 2048
 ft = np.abs(librosa.stft(y[:n_fft], hop_length = n_fft+1))
@@ -26,6 +27,7 @@ plt.title('spectrum')
 plt.xlabel('Frequency Bin')
 plt.ylabel('Amplitude')
 plt.show()
+
 
 # Computing the spectrogram
 spec = np.abs(librosa.stft(y, hop_length=512))
