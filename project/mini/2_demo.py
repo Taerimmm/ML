@@ -6,7 +6,7 @@ import librosa.display
 import warnings
 warnings.filterwarnings('ignore')
 
-y, sr = librosa.load('./project/mini/data/0.mp3')
+y, sr = librosa.load('./project/mini/data/genres_original/blues/blues.00000.wav')
 
 print(y.shape)
 print(sr)
@@ -27,6 +27,7 @@ plt.xlabel('Frequency Bin')
 plt.ylabel('Amplitude')
 plt.show()
 
+# Computing the spectrogram
 spec = np.abs(librosa.stft(y, hop_length=512))
 spec = librosa.amplitude_to_db(spec, ref=np.max) # converting to decibals
 
