@@ -44,6 +44,9 @@ plt.show()
 # Computing the mel spectrogram
 spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
 spect = librosa.power_to_db(spect, ref=np.max) # Converting to decibals
+print(spect)
+print(type(spect))
+print(spect.shape)
 
 # Plotting the mel spectrogram
 plt.figure(figsize=(8,5))
