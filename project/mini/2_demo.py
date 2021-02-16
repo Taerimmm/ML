@@ -6,7 +6,7 @@ import librosa.display
 import warnings
 warnings.filterwarnings('ignore')
 
-y, sr = librosa.load('./project/mini/data/genres_original/blues/blues.00000.wav')
+y, sr = librosa.load('../data/project_data/mini/genre/blues/blues.00000.wav')
 
 print(y.shape)
 print(sr)
