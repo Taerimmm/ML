@@ -18,33 +18,6 @@ import librosa.display
 import warnings
 warnings.filterwarnings('ignore')
 
-y, sr = librosa.load('../data/project/mini/data/genres_original/blues/blues.00000.wav')
-
-print(y.shape)
-print(sr)
-
-plt.plot(y)
-plt.title('Signal')
-plt.xlabel('Time (samples)')
-plt.ylabel('Amplitude')
-plt.show()
-
-# ''' Mel Frequency Cepstral Coefficients (MFCC) '''
-# Extracting mfccs from the audio signal
-mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=512, n_mfcc=13)
-
-# Displaying the mfccs
-plt.figure(figsize=(8,5))
-librosa.display.specshow(mfcc, x_axis='time')
-plt.title('MFCC')
-plt.show()
-
-# Scaling the mfccs
-mfccscaled = np.mean(mfcc.T, axis=0)
-print(mfccscaled)
-
-
-
 ''' Function to Read and Extract Mel Spectrograms from Audio Files '''
 # Creating an empty list to store sizes in
 sizes = []
