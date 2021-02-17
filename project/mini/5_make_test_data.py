@@ -4,3 +4,39 @@
 
 # 2. 3_dataCollect_2 에서 제외된 data 활용
 #    ---> 번거로운 일이지만 오히려 편할 수 있다 / 대신 몇개 안됨
+
+from pytube import YouTube
+import glob
+import os.path
+import numpy as np
+import librosa
+import soundfile as sf
+
+# 유튜브 전용 인스턴스 생성
+par = 'https://www.youtube.com/watch?v=0-q1KafFCLU'
+yt = YouTube(par)
+yt.streams.filter(only_audio=True).all()
+
+# 특정영상 다운로드
+file_name = 'predict_0'
+yt.streams.filter(only_audio=True).first().download('./project/mini/data', filename=file_name) # filename 수정해서 원하는 file명으로 고치기.
+print('success')
+
+# 확장자 변경
+os.chdir('./project/mini/data')
+files = glob.glob("*.mp4")
+for x in files:
+    if not os.path.isdir(x):
+        filename = os.path.splitext(x)
+        try:
+            os.rename(x, filename[0] + '.mp3')
+        except:
+            pass
+
+
+# 30초로 자르기 
+y, sr = librosa.load('./project/mini/data/{}.mp3'.format(file_name))
+
+resize_time = sr * 30
+
+sf.write('./project/mini/data/{}.mp3'.format(file_name), y[:resize_time], sr)

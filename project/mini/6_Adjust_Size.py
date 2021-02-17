@@ -1,14 +1,7 @@
 import os
 import numpy as np
-import pandas as pd
 import librosa
 import librosa.display
-
-from tensorflow.keras.utils import to_categorical
-from sklearn.model_selection import KFold
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense, Conv2D, Flatten, MaxPooling2D, Dropout
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 import warnings
 warnings.filterwarnings('ignore')
