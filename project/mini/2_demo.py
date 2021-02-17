@@ -6,7 +6,7 @@ import librosa.display
 import warnings
 warnings.filterwarnings('ignore')
 
-y, sr = librosa.load('./project/mini/data/genres_original/blues/blues.00000.wav')
+y, sr = librosa.load('../data/project_data/mini/genre/blues/blues.00000.wav')
 
 print(y.shape)
 print(sr)
@@ -44,6 +44,9 @@ plt.show()
 # Computing the mel spectrogram
 spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
 spect = librosa.power_to_db(spect, ref=np.max) # Converting to decibals
+print(spect)
+print(type(spect))
+print(spect.shape)
 
 # Plotting the mel spectrogram
 plt.figure(figsize=(8,5))

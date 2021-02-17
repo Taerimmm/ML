@@ -18,12 +18,14 @@ import librosa.display
 import warnings
 warnings.filterwarnings('ignore')
 
+''' GTZAN '''
+
 ''' Function to Read and Extract Mel Spectrograms from Audio Files '''
-# Creating an empty list to store sizes in
-sizes = []
+# # Creating an empty list to store sizes in
+# sizes = []
 
 # Looping through each audio file
-for dir in os.scandir('../data/project/mini/data/genres_original'):
+for dir in os.scandir('../data/project_data/mini/genre'):
     sizes=[]
     for file in os.scandir(dir):
         # Loading in the audio file
@@ -64,11 +66,12 @@ mfccs_10 = []
 mfccs_11 = []
 mfccs_12 = []
 mfccs_13 = []
-for dir in os.scandir('../data/project/mini/data/genres_original'):
+for dir in os.scandir('../data/project_data/mini/genre'):
     for file in os.scandir(dir):
         y, sr = librosa.core.load(file)
 
-        files.append(file)
+        filename = str(file).split()[1][1:-2]
+        files.append(filename)
 
         label = str(file).split('.')[0][11:]
         labels.append(label)
