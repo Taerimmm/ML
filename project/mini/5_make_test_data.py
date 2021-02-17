@@ -12,6 +12,9 @@ import numpy as np
 import librosa
 import soundfile as sf
 
+import warnings
+warnings.filterwarnings('ignore')
+
 # 유튜브 전용 인스턴스 생성
 par = 'https://www.youtube.com/watch?v=0-q1KafFCLU'
 yt = YouTube(par)
@@ -32,11 +35,21 @@ for x in files:
             os.rename(x, filename[0] + '.mp3')
         except:
             pass
-
+print('success')
 
 # 30초로 자르기 
-y, sr = librosa.load('./project/mini/data/{}.mp3'.format(file_name))
+y, sr = librosa.load('{}.mp3'.format(file_name))
 
 resize_time = sr * 30
 
-sf.write('./project/mini/data/{}.mp3'.format(file_name), y[:resize_time], sr)
+print(y)
+print(y[:resize_time])
+
+print(y.shape)
+print(y[:resize_time].shape)
+
+
+
+print(sf.available_formats())
+with sf.SoundFile('30s_{}.mp3'.format(file_name), 'w', sr, channels=1, format='wav') as f:
+    f.write(y[:resize_time])
