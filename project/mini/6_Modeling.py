@@ -4,7 +4,6 @@ import pandas as pd
 import librosa
 import librosa.display
 
-from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split, KFold
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense, Conv2D, Flatten, MaxPooling2D, Dropout
@@ -16,6 +15,9 @@ warnings.filterwarnings('ignore')
 X = np.load('./project/mini/data/X.npy')
 y = np.load('./project/mini/data/y.npy')
 
+print(X.shape)  # (8973, 128, 660, 1)
+print(y.shape)  # (8973, 15)
+
 x_train, x_val , y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 
@@ -23,15 +25,23 @@ x_train, x_val , y_train, y_val = train_test_split(X, y, test_size=0.2, random_s
 def cnn_model(x):
 
     inputs = Input(shape=x.shape[1:])
-    layer = Conv2D(32, (3,3), padding='same', activation='relu')(inputs)
-    layer = Conv2D(32, (3,3), padding='same', activation='relu')(layer)
-    layer = MaxPooling2D(pool_size=(2,4))(layer)
+    layer = Conv2D(64, (3,3), padding='same', activation='relu')(inputs)
+    layer = MaxPooling2D(pool_size=2)(layer)
+    layer = Conv2D(128, (3,3), padding='same', activation='relu')(layer)
+    layer = MaxPooling2D(pool_size=2)(layer)
     layer = Dropout(0.2)(layer)
-    layer = Conv2D(64, (3,3), padding='same', activation='relu')(layer)
-    layer = Conv2D(64, (3,3), padding='same', activation='relu')(layer)
-    layer = MaxPooling2D(pool_size=(2,4))(layer)
-    layer = Dropout(0.2)(layer)
+    layer = Conv2D(256, (3,3), padding='same', activation='relu')(layer)
+    layer = Conv2D(256, (3,3), padding='same', activation='relu')(layer)
+    layer = MaxPooling2D(pool_size=2)(layer)
+    layer = Conv2D(512, (3,3), padding='same', activation='relu')(layer)
+    layer = Conv2D(512, (3,3), padding='same', activation='relu')(layer)
+    layer = MaxPooling2D(pool_size=2)(layer)
+    layer = Conv2D(512, (3,3), padding='same', activation='relu')(layer)
+    layer = Conv2D(512, (3,3), padding='same', activation='relu')(layer)
+    layer = MaxPooling2D(pool_size=2)(layer)
+    layer = Dropout(0.2)(layer)    
     layer = Flatten()(layer)
+    # layer = Dense(4096)(layer)
     layer = Dense(1024)(layer)
     layer = Dense(256)(layer)
     outputs = Dense(15, activation='softmax')(layer)
