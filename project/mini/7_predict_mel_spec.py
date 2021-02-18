@@ -14,10 +14,10 @@ mel_spect = librosa.power_to_db(mel_spect, ref=np.max)
 if mel_spect.shape[1] != 660:
     mel_spect.resize(128,660, refcheck=False)
 
-test_data = mel_spect.reshape(1, 128, 660, 1)
+test_data = mel_spect.reshape(1, 128, 660, 1) / -80
 print(test_data.shape)
 
-model = load_model('./project/mini/data/genre_model.hdf5')
+model = load_model('./project/mini/data/genre_model_resnet50.hdf5')
 
 label_number = np.argmax(model.predict(test_data), axis=1)
 
@@ -27,18 +27,16 @@ label_dict = {
     0:'hiphop',
     1:'rock',
     2:'pop',
-    3:'instrumental',
-    4:'folk',
-    5:'electronic',
-    6:'international',
-    7:'experimental',
-    8:'jazz',
-    9:'blues',
-    10:'classical',
-    11:'reggae',
-    12:'disco',
-    13:'metal',
-    14:'country'
+    3:'folk',
+    4:'electronic',
+    5:'jazz',
+    6:'blues',
+    7:'classical',
+    8:'reggae',
+    9:'disco',
+    10:'country',
+    11:'ballad',
+    12:'dance'
 }
 
 print(label_dict.get(label_number[0]))

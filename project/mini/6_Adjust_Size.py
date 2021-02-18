@@ -9,7 +9,7 @@ warnings.filterwarnings('ignore')
 dir_max_size = []
 
 # Looping through each audio file - GTZAN
-for dir in os.scandir('../data/project_data/mini/genre'):
+for dir in os.scandir('../data/project_data/mini/new_genre'):
     sizes=[]
     for file in os.scandir(dir):
         # Loading in the audio file
@@ -34,7 +34,7 @@ print('GTZAN Finish!!')
 print(dir_max_size)
 print(max(dir_max_size))
 
-# [(128, 647), (128, 657), (128, 654), (128, 653), (128, 660), (128, 657), (128, 647), (128, 647), (128, 647), (128, 655)]
+# [(128, 646), (128, 647), (128, 657), (128, 654), (128, 646), (128, 653), (128, 660), (128, 657), (128, 647), (128, 647), (128, 655)]
 # (128, 660)
 
 # Looping through each audio file - FMA
