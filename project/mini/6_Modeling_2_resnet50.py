@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import librosa
 import librosa.display
 
@@ -21,6 +22,11 @@ print(y.shape)  # (8973, 15)
 
 x_train, x_val , y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
+# MinMax
+print(np.min(X), np.max(X))
+
+x_train /= -80
+x_val /= -80
 
 # 모델
 input_tensor = Input(shape=X.shape[1:], dtype='float32', name='input')
@@ -219,8 +225,29 @@ resnet50.summary()
 
 model = resnet50
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-file_path = './project/mini/data/genre_model.hdf5'
+file_path = './project/mini/data/genre_model_minmax.hdf5'
 es = EarlyStopping(monitor='val_loss', patience=120)
 cp = ModelCheckpoint(filepath=file_path, monitor='val_loss', save_best_only=True)
 lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=30)
-history = model.fit(x_train, y_train, epochs=5, batch_size=32, validation_data=(x_val, y_val), verbose=2, callbacks=[es,cp,lr])
+history = model.fit(x_train, y_train, epochs=5000, batch_size=32, validation_data=(x_val, y_val), verbose=2, callbacks=[es,cp,lr])
+
+# history plot 해서 그리기
+
+# Epoch 19/5000
+# 225/225 - 68s - loss: 0.8620 - accuracy: 0.7009 - val_loss: 1.7235 - val_accuracy: 0.4490
+# 아마 이때 cp가 저장된 것 같음.
+
+# plt
+train_loss = history.history['accuracy']
+test_loss = history.history['val_accuracy']
+
+plt.figure(figsize=(12,8))
+plt.plot(train_loss, label='Training accuracy', color='blue')
+plt.plot(test_loss, label='Testing accuracy', color='red')
+
+plt.title('Training and Testing Accuracy by Epoch', fontsize=25)
+plt.xlabel('Epoch', fontsize=18)
+plt.ylabel('Accuracy', fontsize=18)
+plt.xticks(range(1,len(train_loss), range(1,len(test_loss))))
+plt.legend(font_size=18)
+plt.show()

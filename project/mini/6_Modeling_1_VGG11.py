@@ -41,9 +41,9 @@ def cnn_model(x):
     layer = MaxPooling2D(pool_size=2)(layer)
     layer = Dropout(0.2)(layer)    
     layer = Flatten()(layer)
-    # layer = Dense(4096)(layer)
-    layer = Dense(1024)(layer)
-    layer = Dense(256)(layer)
+    layer = Dense(4096)(layer)
+    layer = Dense(4096)(layer)
+    layer = Dense(1000)(layer)
     outputs = Dense(15, activation='softmax')(layer)
 
     model = Model(inputs=inputs, outputs=outputs)

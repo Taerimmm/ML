@@ -2,7 +2,10 @@ import numpy as np
 import librosa
 from tensorflow.keras.models import load_model
 
-test_music = '../data/project_data/mini/genre/blues/blues.00000.wav'
+import warnings
+warnings.filterwarnings('ignore')
+
+test_music = '../data/project_data/mini/unclassified/091899.mp3'
 y, sr = librosa.load(test_music)
 
 mel_spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
@@ -39,3 +42,4 @@ label_dict = {
 }
 
 print(label_dict.get(label_number[0]))
+print(test_music.split('/')[-1], '의 장르는', label_dict.get(label_number[0]), '입니다!!')
