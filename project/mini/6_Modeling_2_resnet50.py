@@ -231,11 +231,12 @@ cp = ModelCheckpoint(filepath=file_path, monitor='val_accuracy', save_best_only=
 lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.8, patience=30)
 history = model.fit(x_train, y_train, epochs=5000, batch_size=32, validation_data=(x_val, y_val), verbose=2, callbacks=[es,cp,lr])
 
-# history plot 해서 그리기
-
-# Epoch 15/5000
-# 155/155 - 48s - loss: 0.7682 - accuracy: 0.7146 - val_loss: 1.1029 - val_accuracy: 0.5997
+# Epoch 492/5000
+# 155/155 - 47s - loss: 4.0296e-05 - accuracy: 1.0000 - val_loss: 4.2372 - val_accuracy: 0.6521  
 # 아마 이때 cp가 저장된 것 같음.
+
+
+# history plot 해서 그리기
 
 # plt
 train_loss = history.history['accuracy']
