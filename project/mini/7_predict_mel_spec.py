@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 import warnings
 warnings.filterwarnings('ignore')
 
-test_music = '../data/project_data/mini/unclassified/091899.mp3'
+test_music = './project/mini/data/classical.4.mp3'
 y, sr = librosa.load(test_music)
 
 mel_spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
