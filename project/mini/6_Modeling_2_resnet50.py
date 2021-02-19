@@ -217,7 +217,7 @@ x = conv4_layer(x)
 x = conv5_layer(x)
  
 x = GlobalAveragePooling2D()(x)
-output_tensor = Dense(15, activation='softmax')(x)
+output_tensor = Dense(13, activation='softmax')(x)
 
 resnet50 = Model(input_tensor, output_tensor)
 
@@ -225,16 +225,16 @@ resnet50.summary()
 
 model = resnet50
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-file_path = './project/mini/data/genre_model_minmax.hdf5'
-es = EarlyStopping(monitor='val_loss', patience=120)
-cp = ModelCheckpoint(filepath=file_path, monitor='val_loss', save_best_only=True)
-lr = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=30)
+file_path = './project/mini/data/genre_model_resnet50.hdf5'
+es = EarlyStopping(monitor='val_accuracy', patience=120)
+cp = ModelCheckpoint(filepath=file_path, monitor='val_accuracy', save_best_only=True)
+lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.8, patience=30)
 history = model.fit(x_train, y_train, epochs=5000, batch_size=32, validation_data=(x_val, y_val), verbose=2, callbacks=[es,cp,lr])
 
 # history plot 해서 그리기
 
-# Epoch 19/5000
-# 225/225 - 68s - loss: 0.8620 - accuracy: 0.7009 - val_loss: 1.7235 - val_accuracy: 0.4490
+# Epoch 15/5000
+# 155/155 - 48s - loss: 0.7682 - accuracy: 0.7146 - val_loss: 1.1029 - val_accuracy: 0.5997
 # 아마 이때 cp가 저장된 것 같음.
 
 # plt
@@ -248,6 +248,6 @@ plt.plot(test_loss, label='Testing accuracy', color='red')
 plt.title('Training and Testing Accuracy by Epoch', fontsize=25)
 plt.xlabel('Epoch', fontsize=18)
 plt.ylabel('Accuracy', fontsize=18)
-plt.xticks(range(1,len(train_loss), range(1,len(test_loss))))
-plt.legend(font_size=18)
+# plt.xticks(range(1,len(train_loss), range(1,len(test_loss))))
+plt.legend()
 plt.show()
