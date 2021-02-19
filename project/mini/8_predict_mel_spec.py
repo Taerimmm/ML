@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 import warnings
 warnings.filterwarnings('ignore')
 
-test_music = './project/mini/data/classical.4.mp3'
+test_music = './project/mini/data/ballad.6.mp3'
 y, sr = librosa.load(test_music)
 
 mel_spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
@@ -17,7 +17,7 @@ if mel_spect.shape[1] != 660:
 test_data = mel_spect.reshape(1, 128, 660, 1) / -80
 print(test_data.shape)
 
-model = load_model('./project/mini/data/genre_model_resnet50.hdf5')
+model = load_model('./project/mini/data/genre_model_resnet50_0.6521.hdf5')
 
 label_number = np.argmax(model.predict(test_data), axis=1)
 
