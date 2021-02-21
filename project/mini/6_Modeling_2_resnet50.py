@@ -17,8 +17,8 @@ warnings.filterwarnings('ignore')
 X = np.load('./project/mini/data/X.npy')
 y = np.load('./project/mini/data/y.npy')
 
-print(X.shape)  # (8973, 128, 660, 1)
-print(y.shape)  # (8973, 15)
+print(X.shape)  # (6194, 128, 660, 1)
+print(y.shape)  # (6194, 13)
 
 x_train, x_val , y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
