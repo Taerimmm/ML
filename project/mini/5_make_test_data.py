@@ -16,12 +16,12 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # 유튜브 전용 인스턴스 생성
-par = 'https://www.youtube.com/watch?v=d2ytH5mymWY&ab_channel=Hello%2CMyMusicPlayer'
+par = 'https://www.youtube.com/watch?v=bQW4pYVj8Lc&ab_channel=ppark_'
 yt = YouTube(par)
 yt.streams.filter(only_audio=True).all()
 
 # 특정영상 다운로드
-file_name = '6'
+file_name = '9'
 yt.streams.filter(only_audio=True).first().download('./project/mini/data', filename=file_name) # filename 수정해서 원하는 file명으로 고치기.
 print('success')
 
@@ -42,6 +42,9 @@ y, sr = librosa.load('{}.mp3'.format(file_name))
 
 resize_time = sr * 30
 
-with sf.SoundFile('{}.mp3'.format('ballad.' + file_name), 'w', sr, channels=1, format='wav') as f:
-    f.write(y[:resize_time])
+# with sf.SoundFile('{}.mp3'.format('ballad.' + file_name), 'w', sr, channels=1, format='wav') as f:
+#     f.write(y[:resize_time])
+# print('Finish!!')
+with sf.SoundFile('{}.mp3'.format('pop.' + file_name), 'w', sr, channels=1, format='wav') as f:
+    f.write(y[resize_time*2:resize_time*3])
 print('Finish!!')

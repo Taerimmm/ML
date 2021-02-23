@@ -14,21 +14,16 @@ for dir in os.scandir('../data/project_data/mini/new_genre'):
         # Loading in the audio file
         y, sr = librosa.core.load(file)
 
-        # print(str(file).split('.')[0][11:])
         label = str(file).split('.')[0][11:]
         labels.append(label)
         
         # Computing the mel spectrograms
         spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
         spect = librosa.power_to_db(spect, ref=np.max)
-        # print(spect)
-        # print(spect.shape)
 
         # Adding the size to be 128 x 660
         if spect.shape[1] != 660:
             spect.resize(128,660, refcheck=False)
-        # print(spect)
-        # print(spect.shape)
 
         mel_spec.append(spect)
 
@@ -53,14 +48,10 @@ for dir in os.scandir('../data/project_data/mini/fma'):
         # Computing the mel spectrograms
         spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
         spect = librosa.power_to_db(spect, ref=np.max)
-        # print(spect)
-        # print(spect.shape)
 
         # Adding the size to be 128 x 660
         if spect.shape[1] != 660:
             spect.resize(128,660, refcheck=False)
-        # print(spect)
-        # print(spect.shape)
 
         mel_spec.append(spect)
 

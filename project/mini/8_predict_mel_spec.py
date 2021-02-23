@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 import warnings
 warnings.filterwarnings('ignore')
 
-test_music = './project/mini/data/ballad.6.mp3'
+test_music = './project/mini/data/pop.9.mp3'
 y, sr = librosa.load(test_music)
 
 mel_spect = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=1024)
@@ -19,6 +19,7 @@ print(test_data.shape)
 
 model = load_model('./project/mini/data/genre_model_resnet50_0.6521.hdf5')
 
+print(model.predict(test_data))
 label_number = np.argmax(model.predict(test_data), axis=1)
 
 print(label_number[0])
@@ -40,4 +41,6 @@ label_dict = {
 }
 
 print(label_dict.get(label_number[0]))
+
 print(test_music.split('/')[-1], '의 장르는', label_dict.get(label_number[0]), '입니다!!')
+print(np.round(model.predict(test_data)[0][label_number][0] * 100, 2) , "% 으로 예상됩니다.")
