@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # 유튜브 전용 인스턴스 생성
-par = 'https://www.youtube.com/watch?v=bQW4pYVj8Lc&ab_channel=ppark_'
+par = 'https://www.youtube.com/watch?v=noYRi8bi0aY&ab_channel=KangHero'
 yt = YouTube(par)
 yt.streams.filter(only_audio=True).all()
 
@@ -45,6 +45,6 @@ resize_time = sr * 30
 # with sf.SoundFile('{}.mp3'.format('ballad.' + file_name), 'w', sr, channels=1, format='wav') as f:
 #     f.write(y[:resize_time])
 # print('Finish!!')
-with sf.SoundFile('{}.mp3'.format('pop.' + file_name), 'w', sr, channels=1, format='wav') as f:
+with sf.SoundFile('{}.mp3'.format('classical.' + file_name), 'w', sr, channels=1, format='wav') as f:
     f.write(y[resize_time*2:resize_time*3])
 print('Finish!!')
