@@ -21,13 +21,13 @@ denoised_img = cv2.fastNlMeansDenoising(img, None, 30, 15, 21)
 print(type(denoised_img))
 print(img.shape)
 print(denoised_img.shape)
-# cv2.imshow('before', img)
-# cv2.imshow("after", denoised_img)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+cv2.imshow('before', img)
+cv2.imshow("after", denoised_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 print(np.max(denoised_img), np.min(denoised_img))
-
+'''
 a = []
 size = 50
 for i in range(size):
@@ -166,6 +166,7 @@ for i, (train_idx, val_idx) in enumerate(kfold.split(x_train, y_train)):
     model.fit(x_train_, y_train_, epochs=20, batch_size=32, validation_data=(x_val_, y_val_), verbose=2, callbacks=[es, cp, lr])
 
     print('{}\'s CV End'.format(i+1))
+'''
 '''
 # 4. 예측
 
