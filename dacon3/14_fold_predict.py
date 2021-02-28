@@ -8,6 +8,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
+from efficientnet_pytorch import EfficientNet
 
 torch.set_num_threads(1)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -67,7 +68,7 @@ test_transform = transforms.Compose([
 submission = pd.read_csv('./dacon3/data/sample_submission.csv')
 
 with torch.no_grad():
-    for fold in range(5):
+    for fold in range(4,5):
         model = EfficientNet_MultiLabel(in_channels=3).to(device)
         model.load_state_dict(torch.load('./dacon3/data/EfficientNetB0-fold{}.pt'.format(fold)))
         model.eval()
@@ -80,7 +81,7 @@ with torch.no_grad():
             with torch.no_grad():
                 model.eval()
                 pred_test = model(X_test).cpu().detach().numpy()
-                submission.iloc[n*32:(n+1)*32, 1:] += pred_test / 5
+                submission.iloc[n*32:(n+1)*32, 1:] += pred_test
 
 
 ## 제출물 생성
@@ -88,4 +89,4 @@ with torch.no_grad():
 
 submission.iloc[:,1:] = np.where(submission.values[:,1:] >= 0.5, 1, 0)
 
-submission.to_csv('./dacon3/data/EfficientNetB0-fold0.csv', index=False)
+submission.to_csv('./dacon3/data/EfficientNetB0-fold4.csv', index=False)
