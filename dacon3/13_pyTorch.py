@@ -131,7 +131,7 @@ for train_idx, valid_idx in kf.split(imgs):
 ### seed_everything(42)
 
 # 5개의 fold 모두 실행하려면 for문을 5번 돌리면 됩니다.
-for fold in range(5):
+for fold in range(1):
     model = EfficientNet_MultiLabel(in_channels=3).to(device)
     # model = nn.DataParallel(model)
     train_idx = folds[fold][0]
@@ -146,8 +146,8 @@ for fold in range(5):
         transforms.ToTensor(),
     ])
 
-    epochs = 40
-    batch_size = 48    # 자신의 VRAM에 맞게 조절해야 OOM을 피할 수 있습니다.
+    epochs = 100
+    batch_size = 50    # 자신의 VRAM에 맞게 조절해야 OOM을 피할 수 있습니다.
 
     # Data Loader
     train_dataset = MnistDataset_v2(imgs=imgs[train_idx], labels=labels[train_idx], transform=train_transform)
@@ -243,7 +243,7 @@ test_transform = transforms.Compose([
 submission = pd.read_csv('./dacon3/data/sample_submission.csv')
 
 with torch.no_grad():
-    for fold in range(5):
+    for fold in range(1):
         model = EfficientNet_MultiLabel(in_channels=3).to(device)
         model.load_state_dict(torch.load('./dacon3/data/EfficientNetB0-fold{}.pt'.format(fold)))
         model.eval()
@@ -256,7 +256,7 @@ with torch.no_grad():
             with torch.no_grad():
                 model.eval()
                 pred_test = model(X_test).cpu().detach().numpy()
-                submission.iloc[n*32:(n+1)*32, 1:] += pred_test / 5
+                submission.iloc[n*32:(n+1)*32, 1:] += pred_test 
 
 
 ## 제출물 생성
