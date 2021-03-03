@@ -10,7 +10,7 @@ y = np.array([1,2,3,4,5])
 model = Sequential()
 model.add(Dense(4, input_dim=1))
 model.add(Dense(3))
-model.add(Dense(2))
+model.add(Dense(2, trainable=False))    # layer 마다 trainable 가능!!
 model.add(Dense(2))
 model.add(Dense(1))
 
