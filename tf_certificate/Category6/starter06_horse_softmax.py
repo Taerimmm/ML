@@ -59,12 +59,12 @@ def solution_model():
         # This is the last layer. You should not change this code.
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
-    return model
-
 
     model.compile(#Your Code Here#)
 
     model.fit(#Your Code Here#)
+
+    return model
 
     # NOTE: If training is taking a very long time, you should consider setting the batch size
     # appropriately on the generator, and the steps per epoch in the model.fit() function.

@@ -22,9 +22,6 @@
 # (28,28) as the input shape only. If you amend this, the tests will fail.
 #
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv1D, Flatten, MaxPool1D
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 def solution_model():
     fashion_mnist = tf.keras.datasets.fashion_mnist
@@ -34,21 +31,19 @@ def solution_model():
     print(x_train.shape, x_test.shape)  # (60000, 28, 28) (10000, 28, 28)
     print(y_train.shape, y_test.shape)  # (60000,) (10000,)
 
-    print(y_train[:10])
-
-    model = Sequential()
-    model.add(Conv1D(64, 3, padding='same', input_shape=(28,28)))
-    model.add(Conv1D(64, 3, padding='same'))
-    model.add(MaxPool1D(pool_size=2))
-    model.add(Flatten())
-    model.add(Dense(64))
-    model.add(Dense(32))
-    model.add(Dense(10, activation='softmax'))
+    model = tf.keras.models.Sequential()
+    model.add(tf.keras.layers.Conv1D(64, 3, padding='same', input_shape=(28,28)))
+    model.add(tf.keras.layers.Conv1D(64, 3, padding='same'))
+    model.add(tf.keras.layers.MaxPool1D(pool_size=2))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(64))
+    model.add(tf.keras.layers.Dense(32))
+    model.add(tf.keras.layers.Dense(10, activation='softmax'))
 
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-    es = EarlyStopping(monitor='val_accuracy', patience=30, mode='auto')
-    lr = ReduceLROnPlateau(monitor='val_accuracy', patience=8, factor=0.8, mode='auto')
+    es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=30, mode='auto')
+    lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', patience=8, factor=0.8, mode='auto')
     model.fit(x_train, y_train, epochs=3000, batch_size=32, validation_data=(x_test, y_test), callbacks=[es, lr])
 
     print('Acc :', model.evaluate(x_test, y_test)[1])

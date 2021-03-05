@@ -65,9 +65,14 @@ def solution_model():
 
     model = tf.keras.models.Sequential([
     # YOUR CODE HERE, BUT END WITH A 3 Neuron Dense, activated by softmax
-        tf.keras.layers.Conv2D(64, 3, padding='same', input_shape=(150,150,3)),
+        tf.keras.layers.Conv2D(32, (3,3), padding='same', activation='relu', input_shape=(150,150,3)),
+        tf.keras.layers.MaxPool2D(pool_size=(2,2)),
+        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(2,2)),
+        tf.keras.layers.Conv2D(128, (3,3), activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(2,2)),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(32),
+        tf.keras.layers.Dense(512, activation='relu'),
         tf.keras.layers.Dense(3, activation='softmax')
     ])
 
