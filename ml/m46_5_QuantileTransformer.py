@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 plt.imshow(x)
 plt.xlim([-50,50])
 plt.show()
-'''
+
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=45)
 
@@ -83,4 +83,4 @@ print('R2 :', r2)
 # loss : 11.593486785888672
 # MAE : 2.4177801609039307
 # RMSE : 3.404920791381153
-# R2 : 0.8927303586584643'''
+# R2 : 0.8927303586584643
