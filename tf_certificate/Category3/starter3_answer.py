@@ -45,11 +45,10 @@ def solution_model():
 
 
     TRAINING_DIR = "./tf_certificate/Category3/tmp/rps/"
-    training_datagen = ImageDataGenerator(
+    training_datagen = ImageDataGenerator( # YOUR CODE HERE)
         rescale=1./255,
         validation_split=0.2
     )
-    # YOUR CODE HERE)
 
     train_generator = training_datagen.flow_from_directory(
             './tf_certificate/Category3/tmp/rps',
