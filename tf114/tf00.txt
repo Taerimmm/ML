@@ -1,0 +1,27 @@
+cmd
+
+conda create -n tf114 python=3.6.5
+
+activate base
+
+activate tf114
+
+deactivate
+
+deactivate
+
+conda env list
+
+activate tf114
+
+python
+
+ctrl z
+
+conda search python
+
+pip list
+
+pip install tensorflow==1.14
+
+error 시
