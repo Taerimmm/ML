@@ -3,6 +3,7 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
+tf.compat.v1.set_random_seed(42)
 
 x = tf.placeholder(tf.float32, shape=[None,13])
 y = tf.placeholder(tf.float32, shape=[None,1])
