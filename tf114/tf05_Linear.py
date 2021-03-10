@@ -26,12 +26,3 @@ for step in range(2001):
     sess.run(train)
     if step % 20 == 0:
         print(step, sess.run(cost), sess.run(W), sess.run(b))
-
-    if step < 1:
-        print('x :', x_train)
-        print('W*x + b :', sess.run(hypothesis))
-        print('y :', y_train)
-        print('hypothesis - y_train :', sess.run(hypothesis - y_train))
-        print('cost :', sess.run(cost))
-
-        break
