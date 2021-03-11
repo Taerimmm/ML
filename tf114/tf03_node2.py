@@ -8,7 +8,6 @@ add = tf.add(node1, node2)
 sub = tf.subtract(node1, node2)
 mul = tf.multiply(node1, node2)
 div = tf.div(node1, node2)
-remainder = tf.truncatediv
 
 sess = tf.Session()
 
