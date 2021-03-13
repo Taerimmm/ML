@@ -4,7 +4,7 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-
+tf.compat.v1.set_random_seed(42)
 
 x = tf.placeholder(tf.float32, shape=[None,30])
 y = tf.placeholder(tf.float32, shape=[None,1])
@@ -28,7 +28,7 @@ hypothesis = tf.sigmoid(tf.matmul(x,w) + b)
 
 cost = - tf.reduce_mean(y * tf.log(hypothesis) + (1 - y) * tf.log(1 - hypothesis))
 
-train = tf.train.GradientDescentOptimizer(learning_rate=0.005).minimize(cost)
+train = tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize(cost)
 
 predicted = tf.cast(hypothesis > 0.5, dtype=tf.float32)
 
