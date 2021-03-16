@@ -18,7 +18,7 @@ print(x_test.shape, y_test.shape)       # (10000, 28, 28), (10000,)
 
 print(x_train[0])
 print(y_train[0])
-
+ 
 print(x_train[0].shape)         # (28, 28)
 
 x_train = x_train.reshape(60000,28,28,1)/255.
