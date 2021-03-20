@@ -59,3 +59,5 @@ print(answer.shape)
 answer.iloc[:,1] = np.argmax(pred,1)
 print(answer)
 answer.to_csv('./Lotte/submission.csv', index=False)
+
+# 20.424
