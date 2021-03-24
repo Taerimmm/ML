@@ -61,7 +61,7 @@ model.fit(train_generator, epochs=2000, batch_size=32, validation_data=valid_gen
 
 
 # predict
-model.load_weights('./Lotte/test_model.hdf5')
+model.load_weights('./Lotte/b7_model.hdf5')
 result = model.predict(test_generator, verbose=1)
     
 answer = pd.read_csv('./Lotte/sample.csv', header=0)
