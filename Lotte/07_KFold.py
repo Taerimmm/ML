@@ -72,7 +72,7 @@ for i in range(steps):
 
 
 answer = pd.read_csv('./Lotte/sample.csv', header=0)
-print(answer.shape)
+# print(answer.shape)
 
 answer.iloc[:,1] = np.argmax(result,1)
 print(answer)
