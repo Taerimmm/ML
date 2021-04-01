@@ -8,7 +8,7 @@ for file in os.scandir('./project/team/filtered_img'):
     print(file)
 
     path = os.path.abspath(file)
-    # print(path[41:])
+    # print(path[35:])
     
     jpg = cv2.imread(path)
     jpg = cv2.resize(jpg, (1280,720))
@@ -17,8 +17,8 @@ for file in os.scandir('./project/team/filtered_img'):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    # print('./project/team/resize_img/'+path[41:])    
-    cv2.imwrite('./project/team/resize_img/' + path[41:], jpg)
+    # print('./project/team/resize_img/'+path[35:])    
+    cv2.imwrite('./project/team/resize_img/' + path[35:], jpg)
 
 
 
