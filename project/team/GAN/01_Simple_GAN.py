@@ -114,6 +114,7 @@ def train(iterations, batch_size, sample_interval):
 
             print("% d [D 손실 : %f, 정확도 : %.2f%%] [G 손실 : %f]" % (iteration + 1, d_loss, 100.0 * accuray, g_loss))
 
+            # 생성된 이미지 샘플 출력
             sample_images(generator)
             
         if (iteration % 5000) == 0:
