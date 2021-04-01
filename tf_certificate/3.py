@@ -29,73 +29,42 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 def solution_model():
     _TRAIN_URL = "https://storage.googleapis.com/download.tensorflow.org/data/horse-or-human.zip"
     _TEST_URL = "https://storage.googleapis.com/download.tensorflow.org/data/validation-horse-or-human.zip"
-    urllib.request.urlretrieve(_TRAIN_URL, './horse-or-human.zip')
-    local_zip = './horse-or-human.zip'
+    urllib.request.urlretrieve(_TRAIN_URL, 'horse-or-human.zip')
+    local_zip = 'horse-or-human.zip'
     zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('./tmp/horse-or-human/')
+    zip_ref.extractall('tmp/horse-or-human/')
     zip_ref.close()
-    urllib.request.urlretrieve(_TEST_URL, './testdata.zip')
-    local_zip = './testdata.zip'
+    urllib.request.urlretrieve(_TEST_URL, 'testdata.zip')
+    local_zip = 'testdata.zip'
     zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('./tmp/testdata/')
+    zip_ref.extractall('tmp/testdata/')
     zip_ref.close()
 
     train_datagen = ImageDataGenerator(
         #Your code here. Should at least have a rescale. Other parameters can help with overfitting.)
-        rescale=1/255.,
-        validation_split=0.2
-    )
+
     validation_datagen = ImageDataGenerator(#Your Code here)
-        rescale=1/255.,
-        validation_split=0.2
-    )
+
     train_generator = train_datagen.flow_from_directory(
-        './tmp/horse-or-human/',
-        target_size=(300,300),
-        class_mode="binary",
-        subset='training'
         #Your Code Here)
-    )
+
     validation_generator = validation_datagen.flow_from_directory(
         #Your Code Here)
-        './tmp/testdata/',
-        target_size=(300,300),
-        class_mode="binary",
-        subset='validation'
-    )
+
 
     model = tf.keras.models.Sequential([
         # Note the input shape specified on your first layer must be (300,300,3)
         # Your Code here
-        tf.keras.layers.Conv2D(64, (3,3), padding='same', activation='relu', input_shape=(300,300,3)),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.Activation('relu'),
-        tf.keras.layers.Conv2D(64, (3,3), padding='same', activation='relu'),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.Activation('relu'),
-        tf.keras.layers.MaxPool2D(pool_size=2),
-        tf.keras.layers.Conv2D(128, (3,3), padding='same'),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.Activation('relu'),
-        tf.keras.layers.Conv2D(128, (3,3), padding='same',
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.Activation('relu'),
-        tf.keras.layers.MaxPool2D(pool_size=2),
-        tf.keras.layers.Dropout(0.25),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(256),
-        tf.keras.layers.Dense(128),
-        tf.keras.layers.Dense(64),
-        tf.keras.layers.Dense(32),
+
         # This is the last layer. You should not change this code.
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
-
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])#Your Code Here#)
-
-    model.fit(train_generator, epochs=30, batch_size=64, validation_data=validation_generator, verbose=2)#Your Code Here#)
-
     return model
+
+
+    model.compile(#Your Code Here#)
+
+    model.fit(#Your Code Here#)
 
     # NOTE: If training is taking a very long time, you should consider setting the batch size
     # appropriately on the generator, and the steps per epoch in the model.fit() function.
@@ -106,4 +75,4 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    model.save("./mymodel.h5")
+    model.save("mymodel.h5")

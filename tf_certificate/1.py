@@ -23,33 +23,14 @@
 # an input shape of [1]
 
 import numpy as np
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+
 
 def solution_model():
     xs = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=float)
-    ys = np.array([5.0, 6.0, 7.0, 8.0, 9.0, 10.0], dtype=float)
+    ys = np.array([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0], dtype=float)
 
     # YOUR CODE HERE
-    model = Sequential()
-    model.add(Dense(128, input_dim=1))
-    model.add(Dense(64))
-    model.add(Dense(64))
-    model.add(Dense(32))
-    model.add(Dense(16))
-    model.add(Dense(16))
-    model.add(Dense(8))
-    model.add(Dense(4))
-    model.add(Dense(1, activation='linear'))
-
-    model.compile(loss='mse', optimizer='adam', metrics=['acc'])
-
-    model.fit(xs, ys, epochs=200, batch_size=1)
-
-    print(model.predict([10.0]))
-    
     return model
-
 
 # Note that you'll need to save your model as a .h5 like this.
 # When you press the Submit and Test button, your saved .h5 model will
@@ -57,4 +38,4 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    model.save("./mymodel.h5")
+    model.save("mymodel.h5")

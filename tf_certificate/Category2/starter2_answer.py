@@ -22,6 +22,7 @@
 # (28,28) as the input shape only. If you amend this, the tests will fail.
 #
 import tensorflow as tf
+from sklearn.model_selection import train_test_split
 
 def solution_model():
     fashion_mnist = tf.keras.datasets.fashion_mnist
@@ -30,6 +31,16 @@ def solution_model():
     (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
     print(x_train.shape, x_test.shape)  # (60000, 28, 28) (10000, 28, 28)
     print(y_train.shape, y_test.shape)  # (60000,) (10000,)
+
+    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2, shuffle=True, random_state=42)
+
+    x_train = x_train.astype('float32') / 255.
+    x_test = x_test.astype('float32') / 255.
+    x_val = x_val.astype('float32') / 255.
+
+    x_train= x_train.reshape(-1, 28, 28)
+    x_test = x_test.reshape(-1, 28, 28)
+    x_val = x_val.reshape(-1, 28, 28)
 
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Conv1D(64, 3, padding='same', input_shape=(28,28)))
@@ -44,7 +55,7 @@ def solution_model():
 
     es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=30, mode='auto')
     lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', patience=8, factor=0.8, mode='auto')
-    model.fit(x_train, y_train, epochs=3000, batch_size=32, validation_data=(x_test, y_test), callbacks=[es, lr])
+    model.fit(x_train, y_train, epochs=3000, batch_size=32, validation_data=(x_val, y_val), callbacks=[es, lr])
 
     print('Acc :', model.evaluate(x_test, y_test)[1])
 
@@ -57,4 +68,4 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    model.save("./tf_certificate/Category2/mymodel.h5")
+    model.save("./mymodel.h5")

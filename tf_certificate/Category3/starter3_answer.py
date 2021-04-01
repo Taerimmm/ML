@@ -37,41 +37,51 @@ from keras_preprocessing.image import ImageDataGenerator
 
 def solution_model():
     url = 'https://storage.googleapis.com/download.tensorflow.org/data/rps.zip'
-    urllib.request.urlretrieve(url, './tf_certificate/Category3/rps.zip')
-    local_zip = './tf_certificate/Category3/rps.zip'
+    urllib.request.urlretrieve(url, './rps.zip')
+    local_zip = './rps.zip'
     zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('./tf_certificate/Category3/tmp/')
+    zip_ref.extractall('./tmp/')
     zip_ref.close()
 
 
-    TRAINING_DIR = "./tf_certificate/Category3/tmp/rps/"
+    TRAINING_DIR = "./tmp/rps/"
     training_datagen = ImageDataGenerator( # YOUR CODE HERE)
+        width_shift_range=0.1,
+        height_shift_range=0.1,
         rescale=1./255,
         validation_split=0.2
     )
 
     train_generator = training_datagen.flow_from_directory(
-            './tf_certificate/Category3/tmp/rps',
+            './tmp/rps',
             target_size=(150,150),
+            class_mode='categorical',
+            batch_size=32,
             subset='training'
         )
     valid_generator = training_datagen.flow_from_directory(
-            './tf_certificate/Category3/tmp/rps',
+            './tmp/rps',
             target_size=(150,150),
+            class_mode='categorical',
+            batch_size=32,
             subset='validation'
         )
 
 
     model = tf.keras.models.Sequential([
     # YOUR CODE HERE, BUT END WITH A 3 Neuron Dense, activated by softmax
-        tf.keras.layers.Conv2D(32, (3,3), padding='same', activation='relu', input_shape=(150,150,3)),
-        tf.keras.layers.MaxPool2D(pool_size=(2,2)),
-        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-        tf.keras.layers.MaxPool2D(pool_size=(2,2)),
-        tf.keras.layers.Conv2D(128, (3,3), activation='relu'),
-        tf.keras.layers.MaxPool2D(pool_size=(2,2)),
+        tf.keras.layers.Conv2D(256, (3,3), padding='valid', activation='relu', input_shape=(150,150,3)),
+        tf.keras.layers.MaxPool2D(pool_size=(3,3)),
+        tf.keras.layers.Dropout(0.3),
+        tf.keras.layers.Conv2D(256, (3,3), padding='valid', activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(3,3)),
+        tf.keras.layers.Conv2D(128, (3,3), padding='valid', activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(5,5)),
+        tf.keras.layers.Dropout(0.3),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(512, activation='relu'),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(3, activation='softmax')
     ])
 
@@ -90,4 +100,4 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    model.save("./tf_certificate/Category3/mymodel.h5")
+    model.save("./mymodel.h5")
