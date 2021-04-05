@@ -530,25 +530,26 @@ pix2pix_gan_model.compile(
     disc_loss_fn=discriminator_loss_fn,
 )
 # Callbacks
-checkpoint_filepath = "./project/team/data/model.hdf5"
+checkpoint_filepath = "./project/team/data/model_checkpoints.{epoch:03d}"
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_filepath,
-    monitor='val_loss',
+    monitor='G_loss',
     mode='auto',
-    save_best_only=True
+    save_best_only=True,
+    verbose=1
 )
 reduce_lr = keras.callbacks.ReduceLROnPlateau(
-    monitor='val_loss',
+    monitor='G_loss',
     factor=0.8,
-    patience=10,
-    mode='auto'
+    patience=8, 
+    mode='auto',
+    verbose=1
 )
 early_stopping = keras.callbacks.EarlyStopping(
-    monitor='val_loss',
-    patience=30,
+    monitor='G_loss',
+    patience=20,
     mode='auto'
 )
-
 # Here we will train the model for just one epoch as each epoch takes around
 # 7 minutes on a single P100 backed machine.
 pix2pix_gan_model.fit(
@@ -561,6 +562,11 @@ pix2pix_gan_model.fit(
 
 
 # Predict
+number = os.listdir('./project/team/data/')[-1][-9:-6]
+weight_file = './project/team/data/model_checkpoints.{}'.format(number)
+pix2pix_gan_model.load_weights(weight_file).expect_partial()
+print("Weights loaded successfully")
+
 _, ax = plt.subplots(4, 2, figsize=(10, 15))
 for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
     prediction = pix2pix_gan_model.gen_G(example_input, training=False)[0].numpy()
