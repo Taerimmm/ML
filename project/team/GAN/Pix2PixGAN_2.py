@@ -70,8 +70,8 @@ def load_image_test(image_file, real_image):
     return input_image, real_image
 
 # train_data
-input_img = tf.data.Dataset.list_files(PATH + 'test_padding_img/*.jpg', shuffle=False)
-output_img = tf.data.Dataset.list_files(PATH + 'test_resize_img/*.jpg', shuffle=False)
+input_img = tf.data.Dataset.list_files(PATH + 'padding_img/*.jpg', shuffle=False)
+output_img = tf.data.Dataset.list_files(PATH + 'resize_img/*.jpg', shuffle=False)
 print(input_img)
 print(output_img)
 
@@ -83,8 +83,8 @@ train_dataset = train_dataset.shuffle(BUFFER_SIZE)
 train_dataset = train_dataset.batch(BATCH_SIZE)
 
 # test_data
-input_img = tf.data.Dataset.list_files(PATH + 'test_padding_img_/*.jpg', shuffle=False)
-output_img = tf.data.Dataset.list_files(PATH + 'test_resize_img_/*.jpg', shuffle=False)
+input_img = tf.data.Dataset.list_files(PATH + 'test_img/padding_img/*.jpg', shuffle=False)
+output_img = tf.data.Dataset.list_files(PATH + 'test_img/resize_img/*.jpg', shuffle=False)
 
 test_dataset = tf.data.Dataset.zip((input_img, output_img))
 
@@ -530,7 +530,7 @@ pix2pix_gan_model.compile(
     disc_loss_fn=discriminator_loss_fn,
 )
 # Callbacks
-checkpoint_filepath = "./project/team/data/model_checkpoints.{epoch:03d}"
+checkpoint_filepath = "./project/team/data/model_checkpoints"
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_filepath,
     monitor='G_loss',
@@ -540,14 +540,14 @@ model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
 )
 reduce_lr = keras.callbacks.ReduceLROnPlateau(
     monitor='G_loss',
-    factor=0.8,
+    factor=0.9,
     patience=8, 
     mode='auto',
     verbose=1
 )
 early_stopping = keras.callbacks.EarlyStopping(
     monitor='G_loss',
-    patience=20,
+    patience=30,
     mode='auto'
 )
 # Here we will train the model for just one epoch as each epoch takes around
@@ -562,8 +562,7 @@ pix2pix_gan_model.fit(
 
 
 # Predict
-number = os.listdir('./project/team/data/')[-1][-9:-6]
-weight_file = './project/team/data/model_checkpoints.{}'.format(number)
+weight_file = './project/team/data/model_checkpoints'
 pix2pix_gan_model.load_weights(weight_file).expect_partial()
 print("Weights loaded successfully")
 
