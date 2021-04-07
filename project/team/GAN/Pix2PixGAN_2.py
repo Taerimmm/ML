@@ -8,7 +8,7 @@ from tensorflow.keras import layers
 
 PATH = 'G:/공유 드라이브/Team_project/01_data/'
 
-BUFFER_SIZE = 400
+BUFFER_SIZE = 1000
 BATCH_SIZE = 1
 IMG_WIDTH = 1280
 IMG_HEIGHT = 720
@@ -70,8 +70,8 @@ def load_image_test(image_file, real_image):
     return input_image, real_image
 
 # train_data
-input_img = tf.data.Dataset.list_files(PATH + 'padding_img/*.jpg', shuffle=False)
-output_img = tf.data.Dataset.list_files(PATH + 'resize_img/*.jpg', shuffle=False)
+input_img = tf.data.Dataset.list_files(PATH + 'train/train_input_img/*.jpg', shuffle=False)
+output_img = tf.data.Dataset.list_files(PATH + 'train/train_target_img/*.jpg', shuffle=False)
 print(input_img)
 print(output_img)
 
@@ -83,8 +83,8 @@ train_dataset = train_dataset.shuffle(BUFFER_SIZE)
 train_dataset = train_dataset.batch(BATCH_SIZE)
 
 # test_data
-input_img = tf.data.Dataset.list_files(PATH + 'test_img/padding_img/*.jpg', shuffle=False)
-output_img = tf.data.Dataset.list_files(PATH + 'test_img/resize_img/*.jpg', shuffle=False)
+input_img = tf.data.Dataset.list_files(PATH + 'test/test_input_img/*.jpg', shuffle=False)
+output_img = tf.data.Dataset.list_files(PATH + 'test/test_target_img/*.jpg', shuffle=False)
 
 test_dataset = tf.data.Dataset.zip((input_img, output_img))
 
@@ -106,8 +106,6 @@ for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
     ax[i, 1].axis("off")
 plt.tight_layout()
 plt.show()
-
-
 
 
 # Modeling
@@ -229,7 +227,7 @@ def upsample(
 
 
 # GENERATOR
-def get_generator(basic_filters=64,kernel_size=4,drop_out=0.5,alpha=0.2,name=None):
+def get_generator(basic_filters=64,kernel_size=4,drop_out=0.5,alpha=0,name=None):
     
     initializer = tf.random_normal_initializer(0.,0.02)
     inputs = layers.Input(shape=(720,1280,3), name=name + "_img_input")
@@ -530,7 +528,7 @@ pix2pix_gan_model.compile(
     disc_loss_fn=discriminator_loss_fn,
 )
 # Callbacks
-checkpoint_filepath = "./project/team/data/model_checkpoints"
+checkpoint_filepath = "./project/team/data/model_checkpoints_best"
 model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_filepath,
     monitor='G_loss',
@@ -552,19 +550,27 @@ early_stopping = keras.callbacks.EarlyStopping(
 )
 # Here we will train the model for just one epoch as each epoch takes around
 # 7 minutes on a single P100 backed machine.
+
+# load_weights
+# weight_file = './project/team/data/model_checkpoints_ending'
+# pix2pix_gan_model.load_weights(weight_file).expect_partial()
+# print("Weights loaded successfully")
+
+count = 0
 pix2pix_gan_model.fit(
     train_dataset,
-    epochs=1000,
-    callbacks=[model_checkpoint_callback, reduce_lr, early_stopping],
+    epochs=10,
+    callbacks=[model_checkpoint_callback] #, reduce_lr, early_stopping],
 )
 
-
+pix2pix_gan_model.save_weights("./project/team/data/model_checkpoints_ending")
 
 
 # Predict
-weight_file = './project/team/data/model_checkpoints'
-pix2pix_gan_model.load_weights(weight_file).expect_partial()
-print("Weights loaded successfully")
+# weight_file = './project/team/data/model_checkpoints_ending'
+# pix2pix_gan_model.load_weights(weight_file).expect_partial()
+# print("Weights loaded successfully")
+
 
 _, ax = plt.subplots(4, 2, figsize=(10, 15))
 for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
@@ -583,4 +589,5 @@ for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
     prediction = keras.preprocessing.image.array_to_img(prediction)
     # prediction.save("predicted_img_{i}.png".format(i=i))
 plt.tight_layout()
+plt.savefig('./project/team/data/predict_{}.png'.format(count))
 plt.show()
