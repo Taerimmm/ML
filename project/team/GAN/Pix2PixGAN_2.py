@@ -92,8 +92,14 @@ test_dataset = test_dataset.map(load_image_test)
 test_dataset = test_dataset.shuffle(BUFFER_SIZE)
 test_dataset = test_dataset.batch(BATCH_SIZE)
 
-del input_img
-del output_img
+# val_data
+input_train_dataset = train_dataset.take(800)
+input_val_dataset = train_dataset.skip(800)
+input_val_dataset = input_val_dataset.take(200)
+
+print(input_train_dataset)
+print(input_val_dataset)
+print(test_dataset)
 
 _, ax = plt.subplots(4, 2, figsize=(10, 15))
 for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
@@ -318,11 +324,8 @@ def get_generator(basic_filters=64,kernel_size=4,drop_out=0.5,alpha=0,name=None)
     layer17 = layers.ReLU()(layer17)
     
     outputs_ = layers.Conv2DTranspose(filters=3,kernel_size=kernel_size,strides=2,padding='same',kernel_initializer=initializer,use_bias=False,activation='tanh')(layer17)
-    outputs = (1-alpha)*outputs_+alpha*inputs
-    
-    outputs = layers.Conv2DTranspose(3,4,strides=1,padding='same',kernel_initializer=initializer,activation='tanh')(outputs)    
-    
-    model = keras.models.Model(inputs=inputs,outputs=outputs)
+
+    model = keras.models.Model(inputs=inputs,outputs=outputs_)
     
     return model
 
@@ -558,9 +561,10 @@ early_stopping = keras.callbacks.EarlyStopping(
 
 count = 0
 pix2pix_gan_model.fit(
-    train_dataset,
-    epochs=10,
-    callbacks=[model_checkpoint_callback] #, reduce_lr, early_stopping],
+    input_train_dataset,
+    epochs=100,
+    # callbacks=[model_checkpoint_callback], #, reduce_lr, early_stopping],
+    validation_data=input_val_dataset
 )
 
 pix2pix_gan_model.save_weights("./project/team/data/model_checkpoints_ending")
