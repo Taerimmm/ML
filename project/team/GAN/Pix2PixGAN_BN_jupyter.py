@@ -1,10 +1,21 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython import display
 
 import tensorflow as tf
+import tensorflow_addons as tfa
 from tensorflow import keras
 from tensorflow.keras import layers
+
+# distribution
+gpus = tf.config.experimental.list_physical_devices("GPU")
+if gpus:
+    try:
+        tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
+
+    except RuntimeError as e:
+        print(e)
 
 PATH = 'G:/공유 드라이브/Team_project/01_data/'
 
@@ -69,7 +80,6 @@ def load_image_test(image_file, real_image):
 
     return input_image, real_image
 
-# train_data
 input_img = tf.data.Dataset.list_files(PATH + 'train/train_input_img/*.jpg', shuffle=False)
 output_img = tf.data.Dataset.list_files(PATH + 'train/train_target_img/*.jpg', shuffle=False)
 print(input_img)
@@ -91,28 +101,6 @@ test_dataset = tf.data.Dataset.zip((input_img, output_img))
 test_dataset = test_dataset.map(load_image_test)
 test_dataset = test_dataset.shuffle(BUFFER_SIZE)
 test_dataset = test_dataset.batch(BATCH_SIZE)
-
-# val_data
-input_train_dataset = train_dataset.take(800)
-input_val_dataset = train_dataset.skip(800)
-input_val_dataset = input_val_dataset.take(200)
-
-print(input_train_dataset)
-print(input_val_dataset)
-print(test_dataset)
-
-_, ax = plt.subplots(4, 2, figsize=(10, 15))
-for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
-    ax[i, 0].imshow(example_input[0])
-    ax[i, 1].imshow(example_target[0])
-    ax[i, 0].set_title("Input image")
-    ax[i, 0].set_title("Input image")
-    ax[i, 1].set_title("Translated image")
-    ax[i, 0].axis("off")
-    ax[i, 1].axis("off")
-plt.tight_layout()
-plt.show()
-
 
 # Modeling
 class ReflectionPadding2D(layers.Layer):
@@ -231,105 +219,7 @@ def upsample(
         x = activation(x)
     return x
 
-
-# GENERATOR
-def get_generator(basic_filters=64,kernel_size=4,drop_out=0.5,alpha=0,name=None):
-    
-    initializer = tf.random_normal_initializer(0.,0.02)
-    inputs = layers.Input(shape=(720,1280,3), name=name + "_img_input")
-    layer1 = layers.Conv2D(filters = basic_filters,kernel_size=4,strides=2,padding='same',use_bias=False,kernel_initializer=initializer)(inputs)
-    layer1 = layers.LeakyReLU()(layer1)
-    layer1_ = layer1
-    
-    layer2 = layers.Conv2D(filters=basic_filters*2,kernel_size=kernel_size,strides=2,padding='same',use_bias=False,kernel_initializer=initializer)(layer1)
-    layer2_ = layers.BatchNormalization()(layer2)
-    layer2 = layers.LeakyReLU()(layer2_)
-    
-    layer3 = layers.Conv2D(filters=basic_filters*4,kernel_size=kernel_size,strides=2,padding='same',use_bias=False,kernel_initializer=initializer)(layer2)
-    layer3_ = layers.BatchNormalization()(layer3)
-    layer3 = layers.LeakyReLU()(layer3_)
-    
-    layer4 = layers.Conv2D(filters=basic_filters*8,kernel_size=kernel_size,strides=(2,2),padding='same',use_bias=False,kernel_initializer=initializer)(layer3)
-    layer4_ = layers.BatchNormalization()(layer4)
-    layer4 = layers.LeakyReLU()(layer4_)
-    
-    layer5 = layers.Conv2D(filters=basic_filters*8,kernel_size=kernel_size,strides=(3,2),padding='same',use_bias=False,kernel_initializer=initializer)(layer4)
-    layer5_ = layers.BatchNormalization()(layer5)
-    layer5 = layers.LeakyReLU()(layer5_)
-    
-    layer6 = layers.Conv2D(filters=basic_filters*8,kernel_size=kernel_size,strides=(3,2),padding='same',use_bias=False,kernel_initializer=initializer)(layer5)
-    layer6_ = layers.BatchNormalization()(layer6)
-    layer6 = layers.LeakyReLU()(layer6_)
-    
-    layer7 = layers.Conv2D(filters=basic_filters*8,kernel_size=kernel_size,strides=(1,2),padding='same',use_bias=False,kernel_initializer=initializer)(layer6)
-    layer7_ = layers.BatchNormalization()(layer7)
-    layer7 = layers.LeakyReLU()(layer7_)
-    
-    layer8 = layers.Conv2D(filters=basic_filters*16,kernel_size=kernel_size,strides=(1,2),padding='same',use_bias=False,kernel_initializer=initializer)(layer7)
-    layer8_ = layers.BatchNormalization()(layer8)
-    layer8 = layers.LeakyReLU()(layer8_)
-    
-    # 가운데
-    layer9 = layers.Conv2D(filters=basic_filters*16,kernel_size=kernel_size,strides=(5,5),padding='same',use_bias=False,kernel_initializer=initializer)(layer8)
-    layer9_ = layers.BatchNormalization()(layer9)
-    layer9 = layers.LeakyReLU()(layer9_)
-    # 가운데
-    
-    layer10 = layers.Conv2DTranspose(filters=basic_filters*16,kernel_size=kernel_size,strides=(5,5),padding='same',kernel_initializer=initializer,use_bias=False)(layer9)
-    layer10 = layers.BatchNormalization()(layer10)
-    layer10 = layer10+layer8_
-    layer10 = layers.Dropout(drop_out)(layer10)
-    layer10 = layers.ReLU()(layer10)
-    
-    layer11 = layers.Conv2DTranspose(filters=basic_filters*8,kernel_size=kernel_size,strides=(1,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer10)
-    layer11 = layers.BatchNormalization()(layer11)
-    layer11 = layer11+layer7_
-    layer11 = layers.Dropout(drop_out)(layer11)
-    layer11 = layers.ReLU()(layer11)
-    
-    layer12 = layers.Conv2DTranspose(filters=basic_filters*8,kernel_size=kernel_size,strides=(1,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer11)
-    layer12 = layers.BatchNormalization()(layer12)
-    layer12 = layer12+layer6_
-    layer12 = layers.Dropout(drop_out)(layer12)
-    layer12 = layers.ReLU()(layer12)
-    
-    layer13 = layers.Conv2DTranspose(filters=basic_filters*8,kernel_size=kernel_size,strides=(3,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer12)
-    layer13 = layers.BatchNormalization()(layer13)
-    layer13 = layer13+layer5_
-    layer13 = layers.Dropout(drop_out)(layer13)
-    layer13 = layers.ReLU()(layer13)
-    
-    layer14 = layers.Conv2DTranspose(filters=basic_filters*8,kernel_size=kernel_size,strides=(3,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer13)
-    layer14 = layers.BatchNormalization()(layer14)
-    layer14 = layer14+layer4_
-    layer14 = layers.Dropout(drop_out)(layer14)
-    layer14 = layers.ReLU()(layer14)
-    
-    layer15 = layers.Conv2DTranspose(filters=basic_filters*4,kernel_size=kernel_size,strides=(2,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer14)
-    layer15 = layers.BatchNormalization()(layer15)
-    layer15 = layer15+layer3_
-    layer15 = layers.Dropout(drop_out)(layer15)
-    layer15 = layers.ReLU()(layer15)
-    
-    layer16 = layers.Conv2DTranspose(filters=basic_filters*2,kernel_size=kernel_size,strides=(2,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer15)
-    layer16 = layers.BatchNormalization()(layer16)
-    layer16 = layer16+layer2_
-    layer16 = layers.Dropout(drop_out)(layer16)
-    layer16 = layers.ReLU()(layer16)
-    
-    layer17 = layers.Conv2DTranspose(filters=basic_filters,kernel_size=kernel_size,strides=(2,2),padding='same',kernel_initializer=initializer,use_bias=False)(layer16)
-    layer17 = layers.BatchNormalization()(layer17)
-    layer17 = layer17+layer1_
-    layer17 = layers.Dropout(drop_out)(layer17)
-    layer17 = layers.ReLU()(layer17)
-    
-    outputs_ = layers.Conv2DTranspose(filters=3,kernel_size=kernel_size,strides=2,padding='same',kernel_initializer=initializer,use_bias=False,activation='tanh')(layer17)
-
-    model = keras.models.Model(inputs=inputs,outputs=outputs_)
-    
-    return model
-
-'''
+# Generator
 def get_generator(
     filters=64,
     num_downsampling_blocks=2,
@@ -367,9 +257,8 @@ def get_generator(
 
     model = keras.models.Model(img_input, x, name=name)
     return model
-'''
 
-# DISCRIMINATOR
+# Generator
 def get_discriminator(
     filters=64, kernel_initializer=kernel_init, num_downsampling=5, name=None
 ):
@@ -412,23 +301,12 @@ def get_discriminator(
 
 # Get the generators
 gen_G = get_generator(name="generator_G")
-# gen_F = get_generator(name="generator_F")
 
 # Get the discriminators
-# disc_X = get_discriminator(name="discriminator_X")
 disc_Y = get_discriminator(name="discriminator_Y")
 
-gen_G.summary()
-print(gen_G)
-# print(gen_F)
-disc_Y.summary()
-# print(disc_X)
-print(disc_Y)
 
-
-
-
-# Build the Pix2Pix model
+# Pix2Pix
 class Pix2Pix(keras.Model):
     def __init__(
         self,
@@ -492,7 +370,6 @@ class Pix2Pix(keras.Model):
         }
 
 
-
 # Loss function for evaluating adversarial loss
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
@@ -530,68 +407,38 @@ pix2pix_gan_model.compile(
     gen_loss_fn=generator_loss_fn,
     disc_loss_fn=discriminator_loss_fn,
 )
-# Callbacks
-checkpoint_filepath = "./project/team/data/model_checkpoints_best"
-model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_filepath,
-    monitor='G_loss',
-    mode='auto',
-    save_best_only=True,
-    verbose=1
-)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(
-    monitor='G_loss',
-    factor=0.9,
-    patience=8, 
-    mode='auto',
-    verbose=1
-)
-early_stopping = keras.callbacks.EarlyStopping(
-    monitor='G_loss',
-    patience=30,
-    mode='auto'
-)
-# Here we will train the model for just one epoch as each epoch takes around
-# 7 minutes on a single P100 backed machine.
-
-# load_weights
-# weight_file = './project/team/data/model_checkpoints_ending'
-# pix2pix_gan_model.load_weights(weight_file).expect_partial()
-# print("Weights loaded successfully")
-
-count = 0
-pix2pix_gan_model.fit(
-    input_train_dataset,
-    epochs=100,
-    # callbacks=[model_checkpoint_callback], #, reduce_lr, early_stopping],
-    validation_data=input_val_dataset
-)
-
-pix2pix_gan_model.save_weights("./project/team/data/model_checkpoints_ending")
 
 
-# Predict
-# weight_file = './project/team/data/model_checkpoints_ending'
-# pix2pix_gan_model.load_weights(weight_file).expect_partial()
-# print("Weights loaded successfully")
+for count in range(10):
+    # pix2pix_gan_model.fit(
+    # train_dataset,
+    # epochs=100,
+    # )
 
+    # pix2pix_gan_model.save_weights("./TR/models/bn_model_checkpoints_ending")
+    
+    weight_file = './project/team/data/bn_model_checkpoints_ending'
+    pix2pix_gan_model.load_weights(weight_file).expect_partial()
+    print("Weights loaded successfully")
 
-_, ax = plt.subplots(4, 2, figsize=(10, 15))
-for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
-    prediction = pix2pix_gan_model.gen_G(example_input, training=False)[0].numpy()
-    prediction = (prediction * 127.5 + 127.5).astype(np.uint8)
-    example_input = (example_input[0] * 127.5 + 127.5).numpy().astype(np.uint8)
+    _, ax = plt.subplots(4, 2, figsize=(10, 15))
+    for i, (example_input, example_target) in enumerate(test_dataset.take(4)):
+        prediction = pix2pix_gan_model.gen_G(example_input, training=False)[0].numpy()
+        prediction = (prediction * 127.5 + 127.5).astype(np.uint8)
+        example_input = (example_input[0] * 127.5 + 127.5).numpy().astype(np.uint8)
 
-    ax[i, 0].imshow(example_input)
-    ax[i, 1].imshow(prediction)
-    ax[i, 0].set_title("Input image")
-    ax[i, 0].set_title("Input image")
-    ax[i, 1].set_title("Translated image")
-    ax[i, 0].axis("off")
-    ax[i, 1].axis("off")
+        ax[i, 0].imshow(example_input)
+        ax[i, 1].imshow(prediction)
+        ax[i, 0].set_title("Input image")
+        ax[i, 0].set_title("Input image")
+        ax[i, 1].set_title("Translated image")
+        ax[i, 0].axis("off")
+        ax[i, 1].axis("off")
 
-    prediction = keras.preprocessing.image.array_to_img(prediction)
-    # prediction.save("predicted_img_{i}.png".format(i=i))
-plt.tight_layout()
-plt.savefig('./project/team/data/predict_{}.png'.format(count))
-plt.show()
+        # prediction = keras.preprocessing.image.array_to_img(prediction)
+        # prediction.save("predicted_img_{i}.png".format(i=i))
+    plt.tight_layout()
+    # plt.savefig('./TR/output_images/bn_predict_{}.png'.format(count))
+    plt.show()
+    
+    display.clear_output(wait=True)
