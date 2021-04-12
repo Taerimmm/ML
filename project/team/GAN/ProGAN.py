@@ -97,4 +97,3 @@ def pixelwise_feat_norm(inputs, **kawrgs):
     normalization_constant = K.backend.sqrt(K.backend.mean(inputs ** 2, axis=-1, keepdims=True) + 1.0e-8)
 
     return inputs / normalization_constant
-
