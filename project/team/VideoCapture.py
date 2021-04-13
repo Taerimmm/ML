@@ -5,7 +5,7 @@
 import cv2
 
 # 영상의 의미지를 연속적으로 캡쳐할 수 있게 하는 class
-vidcap = cv2.VideoCapture('./project/team/data/LILAC.mp4')
+vidcap = cv2.VideoCapture('./project/team/data/original_MV/LILAC.mp4')
 
 count = 0
 
@@ -17,15 +17,28 @@ print( length )
 fps = int(vidcap.get(cv2.CAP_PROP_FPS))
 print(fps)
 
-# get() 함수를 이용하여 전체 프레임 중 1/20의 프레임만 가져와 저장
+# # get() 함수를 이용하여 전체 프레임 중 1/20의 프레임만 가져와 저장
+# while (vidcap.isOpened()):
+#     ret, image = vidcap.read()
+    
+#     if int(vidcap.get(1)) % (fps * 10) == 0:
+#         print('Save frame number :', str(int(vidcap.get(1))))
+#         cv2.imwrite('./project/team/data/frame/{}.jpg'.format(count), image)
+#         print('Save frame %d.jpg' %count)
+#         count += 1
+    
+#     elif vidcap.get(1) == int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT)):
+#         break
+
+# 모든 프레임 가져오기
 while (vidcap.isOpened()):
-    ret, image = vidcap.read()
+    ret, image = vidcap.read()  # 영상을 한 frame 씩 가져오기
     
-    if int(vidcap.get(1)) % (fps * 10) == 0:
-        print('Save frame number :', str(int(vidcap.get(1))))
-        cv2.imwrite('./project/team/data/{}.jpg'.format(count), image)
-        print('Save frame %d.jpg' %count)
-        count += 1
+    # if int(vidcap.get(1)) % (fps * 10) == 0:
+    print('Save frame number :', str(int(vidcap.get(1))))
+    cv2.imwrite('./project/team/data/frame/{}.jpg'.format(count), image)
+    print('Save frame %d.jpg' %count)
+    count += 1
     
-    elif vidcap.get(1) == int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT)):
+    if vidcap.get(1) == int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT)):
         break
