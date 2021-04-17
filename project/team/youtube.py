@@ -5,7 +5,7 @@ import glob
 from pytube import YouTube
 
 # 유튜브 전용 인스턴스 생성
-par = 'https://www.youtube.com/watch?v=v7bnOxV4jAc'
+par = 'https://www.youtube.com/watch?v=TWj-8_-XnaU'
 yt = YouTube(par)
 
 print(yt.title)
@@ -16,11 +16,11 @@ for e in yt.streams.filter(file_extension='mp4').all():
 
 # 음성이 없는 영상 다운로드
 # order_by('resolution').desc().first() 로 해상도 가장 좋은 영상 다운로드
-yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('./project/team/data/original_MV', filename='LILAC')
+yt.streams.filter(progressive=False, file_extension='mp4').order_by('resolution').desc().first().download('./project/team/data/original_MV', filename='ONF')
 print('success')
 
 # 음성만 있는 영상 다운로드
-yt.streams.filter(only_audio=True).first().download('./project/team/data/original_Music', filename='LILAC') # filename 수정해서 원하는 file명으로 고치기.
+yt.streams.filter(only_audio=True).first().download('./project/team/data/original_Music', filename='ONF') # filename 수정해서 원하는 file명으로 고치기.
 print('success')
 
 # 확장자 변경
