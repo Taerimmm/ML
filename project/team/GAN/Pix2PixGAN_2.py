@@ -329,46 +329,6 @@ def get_generator(basic_filters=64,kernel_size=4,drop_out=0.5,alpha=0,name=None)
     
     return model
 
-'''
-def get_generator(
-    filters=64,
-    num_downsampling_blocks=2,
-    num_residual_blocks=9,
-    num_upsample_blocks=2,
-    gamma_initializer=gamma_init,
-    name=None,
-):
-    img_input = layers.Input(shape=(720,1280,3), name=name + "_img_input")
-    x = ReflectionPadding2D(padding=(3, 3))(img_input)
-    x = layers.Conv2D(filters, (7, 7), kernel_initializer=kernel_init, use_bias=False)(
-        x
-    )
-    x = layers.BatchNormalization(gamma_initializer=gamma_initializer)(x)
-    x = layers.Activation("relu")(x)
-
-    # Downsampling
-    for _ in range(num_downsampling_blocks):
-        filters *= 2
-        x = downsample(x, filters=filters, activation=layers.Activation("relu"))
-
-    # Residual blocks
-    for _ in range(num_residual_blocks):
-        x = residual_block(x, activation=layers.Activation("relu"))
-
-    # Upsampling
-    for _ in range(num_upsample_blocks):
-        filters //= 2
-        x = upsample(x, filters, activation=layers.Activation("relu"))
-
-    # Final block
-    x = ReflectionPadding2D(padding=(3, 3))(x)
-    x = layers.Conv2D(3, (7, 7), padding="valid")(x)
-    x = layers.Activation("tanh")(x)
-
-    model = keras.models.Model(img_input, x, name=name)
-    return model
-'''
-
 # DISCRIMINATOR
 def get_discriminator(
     filters=64, kernel_initializer=kernel_init, num_downsampling=5, name=None
