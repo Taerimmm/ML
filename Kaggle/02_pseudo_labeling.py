@@ -269,3 +269,5 @@ submission[[col for col in submission.columns if col.startswith('submit_')]].sum
 submission[TARGET] = (submission[[col for col in submission.columns if col.startswith('submit_')]].sum(axis=1) >= 2).astype(int)
 
 submission[['PassengerId', TARGET]].to_csv("./Kaggle/data/voting_submission.csv", index = False)
+
+# 0.81722

@@ -23,46 +23,57 @@ test_data = pd.read_csv('./Kaggle/data/test.csv', index_col=0)
 
 target = train_data.pop('Survived')
 
+all_df = pd.concat([train_data, test_data])
+
+print(all_df.head())
+print(all_df.tail())
+
+target2 = pd.read_csv('./Kaggle/data/pseudo_label.csv')['Survived']
+
+target = pd.concat([target, target2], ignore_index=True)
+
 submission = pd.read_csv('./Kaggle/data/sample_submission.csv', index_col='PassengerId')
 
-# print(train_data)
-# print(test_data)
+
+# print(all_df.shape)
+# print(test_data.shape)
 # print(target)
 
 # Preprocessing
-train_data.drop(['Name', 'Ticket', 'Cabin'], axis=1, inplace=True)
+all_df.drop(['Name', 'Ticket', 'Cabin'], axis=1, inplace=True)
 test_data.drop(['Name', 'Ticket', 'Cabin'], axis=1, inplace=True)
 
-train_data['Age'].fillna((train_data['Age'].median()), inplace=True)
-test_data['Age'].fillna((train_data['Age'].median()), inplace=True)
+all_df['Age'].fillna((all_df['Age'].median()), inplace=True)
+test_data['Age'].fillna((test_data['Age'].median()), inplace=True)
 
-train_data['Fare'].fillna((train_data['Fare'].median()), inplace=True)
-test_data['Fare'].fillna((train_data['Fare'].median()), inplace=True)
+all_df['Fare'].fillna((all_df['Fare'].median()), inplace=True)
+test_data['Fare'].fillna((test_data['Fare'].median()), inplace=True)
 
-train_data['Fare'] = train_data['Fare'].map(lambda i: np.log(i) if i > 0 else 0)
+all_df['Fare'] = all_df['Fare'].map(lambda i: np.log(i) if i > 0 else 0)
 test_data['Fare'] = test_data['Fare'].map(lambda i: np.log(i) if i > 0 else 0)
 
-train_data['FamilySize'] = train_data['SibSp'] + train_data['Parch'] + 1
+all_df['FamilySize'] = all_df['SibSp'] + all_df['Parch'] + 1
 test_data['FamilySize'] = test_data['SibSp'] + test_data['Parch'] + 1
 
-train_data['Embarked'].fillna('S', inplace=True)
+all_df['Embarked'].fillna('S', inplace=True)
 test_data['Embarked'].fillna('S', inplace=True)
 
 for col in ['Pclass', 'Sex', 'Embarked']:
     le = LabelEncoder()
-    le.fit(train_data[col])
-    train_data[col] = le.transform(train_data[col])    
+    le.fit(all_df[col])
+    all_df[col] = le.transform(all_df[col])    
     test_data[col] = le.transform(test_data[col])
 
 
-x_train, x_valid, y_train, y_valid = train_test_split(train_data, target, test_size=0.1, random_state=0)
+
+x_train, x_valid, y_train, y_valid = train_test_split(all_df, target, test_size=0.1, random_state=0)
 
 x_train_scaled = x_train.copy()
 x_valid_scaled = x_valid.copy()
 test_scaled = test_data.copy()
 
 scaler = StandardScaler()
-scaler.fit(train_data)
+scaler.fit(all_df)
 x_train_scaled = scaler.transform(x_train)
 x_valid_scaled = scaler.transform(x_valid)
 test_scaled = scaler.transform(test_data)
@@ -179,7 +190,7 @@ hard_classifier_predictions = np.round(binary_average).astype(int)
 submission['Survived'] = hard_classifier_predictions
 submission.to_csv('./Kaggle/data/hard_voting_classifier.csv')
 
-# 0.79672
+# 0.80976
 
 # Soft voting classifier
 probs_average = np.mean([svc_kernel_rbf_final_pred_probs,
@@ -195,4 +206,4 @@ soft_classifier_predictions = np.round(probs_average).astype(int)
 submission['Survived'] = soft_classifier_predictions
 submission.to_csv('./Kaggle/data/soft_voting_classifier.csv')
 
-# 0.79127
+# 0.80923
