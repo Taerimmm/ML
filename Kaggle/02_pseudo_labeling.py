@@ -9,8 +9,8 @@ from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 
 import lightgbm as lgb
 import catboost as ctb
-from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
 
 import warnings
 warnings.simplefilter('ignore')
