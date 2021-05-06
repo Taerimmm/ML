@@ -30,7 +30,6 @@ ck = ModelCheckpoint('./keras3/', save_weights_only=True, save_best_only=True, m
 model.fit(x_train, y_train, epochs=3, validation_split=0.2, callbacks=[es, lr, ck])
 
 results = model.evaluate(x_test, y_test)
-
 print(results)
 
 # model.summary() 

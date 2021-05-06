@@ -33,7 +33,7 @@ except:
 model3 = load_model('ak_save_boston', custom_objects=ak.CUSTOM_OBJECTS)
 result_boston = model3.evaluate(x_test, y_test)
 
-y_pred = model3.predict(x_test)
+y_pred = model3.predict(x_test).round()
 acc = accuracy_score(y_test, y_pred)
 
 print("load_result :", result_boston, acc)
