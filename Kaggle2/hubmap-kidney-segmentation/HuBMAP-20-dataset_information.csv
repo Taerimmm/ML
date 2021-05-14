@@ -1,0 +1,21 @@
+image_file,width_pixels,height_pixels,anatomical_structures_segmention_file,glomerulus_segmentation_file,patient_number,race,ethnicity,sex,age,weight_kilograms,height_centimeters,bmi_kg/m^2,laterality,percent_cortex,percent_medulla
+aa05346ff.tiff,47340,30720,aa05346ff-anatomical-structure.json,aa05346ff.json,67347,White,Not Hispanic or Latino,Female,58,59.0,160.0,23.0,Right,80,20
+afa5e8098.tiff,43780,36800,afa5e8098-anatomical-structure.json,afa5e8098.json,67347,White,Not Hispanic or Latino,Female,58,59.0,160.0,23.0,Right,55,45
+54f2eec69.tiff,22240,30440,54f2eec69-anatomical-structure.json,54f2eec69.json,67548,Black or African American,Not Hispanic or Latino,Male,58,79.9,190.5,22.0,Right,75,25
+d488c759a.tiff,29020,46660,d488c759a-anatomical-structure.json,d488c759a.json,68138,White,Not Hispanic or Latino,Female,66,81.5,158.8,32.2,Left,100,0
+1e2425f28.tiff,32220,26780,1e2425f28-anatomical-structure.json,1e2425f28.json,63921,White,Not Hispanic or Latino,Male,48,131.5,193.0,35.3,Right,65,35
+e79de561c.tiff,27020,16180,e79de561c-anatomical-structure.json,e79de561c.json,67026,Black or African American,Not Hispanic or Latino,Male,53,73.0,166.0,26.5,Left,55,45
+c68fe75ea.tiff,49780,26840,c68fe75ea-anatomical-structure.json,c68fe75ea.json,67112,White,Not Hispanic or Latino,Male,56,91.2,167.6,32.5,Left,80,20
+095bf7a1f.tiff,39000,38160,095bf7a1f-anatomical-structure.json,095bf7a1f.json,68250,White,Not Hispanic or Latino,Female,44,71.7,160.0,28.0,Right,65,35
+26dc41664.tiff,42360,38160,26dc41664-anatomical-structure.json,26dc41664.json,68304,White,Not Hispanic or Latino,Female,66,71.3,167.6,25.4,Left,55,45
+57512b7f1.tiff,43160,33240,57512b7f1-anatomical-structure.json,57512b7f1.json,68555,White,Not Hispanic or Latino,Female,76,93.0,157.4,37.5,Left,80,20
+4ef6695ce.tiff,50680,39960,4ef6695ce-anatomical-structure.json,4ef6695ce.json,66999,White,Not Hispanic or Latino,Male,56,91.4,181.6,27.7,Right,65,35
+aaa6a05cc.tiff,13013,18484,aaa6a05cc-anatomical-structure.json,aaa6a05cc.json,65631,White,Not Hispanic or Latino,Female,73,,,,Left,75,25
+b9a3865fc.tiff,40429,31295,b9a3865fc-anatomical-structure.json,b9a3865fc.json,67347,White,Not Hispanic or Latino,Female,58,59.0,160.0,23.0,Right,55,45
+cb2d976f4.tiff,49548,34940,cb2d976f4-anatomical-structure.json,cb2d976f4.json,67548,Black or African American,Not Hispanic or Latino,Male,58,79.9,190.5,22.0,Right,75,25
+b2dc8411c.tiff,31262,14844,b2dc8411c-anatomical-structure.json,b2dc8411c.json,67026,Black or African American,Not Hispanic or Latino,Male,53,73.0,166.0,26.5,Left,55,45
+2ec3f1bb9.tiff,47723,23990,2ec3f1bb9-anatomical-structure.json,2ec3f1bb9.json,67112,White,Not Hispanic or Latino,Male,56,91.2,167.6,32.5,Left,80,20
+0486052bb.tiff,34937,25784,0486052bb-anatomical-structure.json,0486052bb.json,67177,White,Not Hispanic or Latino,Male,31,106.1,180.3,32.6,Right,80,20
+3589adb90.tiff,22165,29433,3589adb90-anatomical-structure.json,3589adb90.json,68304,White,Not Hispanic or Latino,Female,66,71.3,167.6,25.4,Left,55,45
+2f6ecfcdf.tiff,25794,31278,2f6ecfcdf-anatomical-structure.json,2f6ecfcdf.json,68555,White,Not Hispanic or Latino,Female,76,93.0,157.4,37.5,Left,80,20
+8242609fa.tiff,44066,31299,8242609fa-anatomical-structure.json,8242609fa.json,66999,White,Not Hispanic or Latino,Male,56,91.4,181.6,27.7,Right,65,35
